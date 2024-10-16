@@ -1,3 +1,3 @@
-from .logger import Logger
+from .log import Log
 
-log = Logger("INFO")
+log = Log("INFO")

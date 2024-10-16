@@ -18,6 +18,11 @@ if not pyuac.isUserAdmin():
         sys.exit(1)
 
 
+def run_main_actions():
+    while True:
+        game.start()
+
+
 def first_run():
     log.info("启动成功")
     input("按回车键关闭窗口. . .")
@@ -25,12 +30,11 @@ def first_run():
 
 
 def run_main_actions():
-    while True:
-        game.start()
+    game.start()
 
 
 def main(action=None):
-    first_run()
+    # first_run()
 
     # 完整运行
     if action is None or action == "main":

@@ -9,62 +9,62 @@ from .coloredformatter import ColoredFormatter
 from .colorcodefilter import ColorCodeFilter
 
 
-class Logger(metaclass=SingletonMeta):
+class Log(metaclass=SingletonMeta):
     """
     日志管理类
     """
 
     def __init__(self, level="INFO"):
         self._level = level
-        self._init_logger()
+        self._init_log()
         self._initialized = True
 
-    def _init_logger(self):
+    def _init_log(self):
         """根据提供的日志级别初始化日志器及其配置。"""
-        self._create_logger()
-        self._create_logger_title()
+        self._create_log()
+        self._create_log_title()
 
     def _current_datetime(self):
         """获取当前日期，格式为YYYY-MM-DD."""
         return datetime.now().strftime("%Y-%m-%d")
 
-    def _create_logger(self):
+    def _create_log(self):
         """创建并配置日志器，包括控制台和文件输出."""
-        self.logger = logging.getLogger('StarRailAuto')
-        self.logger.propagate = False
-        self.logger.setLevel(self._level)
+        self.log = logging.getLogger('StarRailAuto')
+        self.log.propagate = False
+        self.log.setLevel(self._level)
 
         # 控制台日志
         console_handler = logging.StreamHandler()
         console_formatter = ColoredFormatter('%(asctime)s | %(levelname)s | %(message)s')
         console_handler.setFormatter(console_formatter)
-        self.logger.addHandler(console_handler)
+        self.log.addHandler(console_handler)
 
         # 文件日志
         self._ensure_log_directory_exists()
         file_handler = logging.FileHandler(f"./logs/{self._current_datetime()}.log", encoding="utf-8")
         file_formatter = ColorCodeFilter('%(asctime)s | %(levelname)s | %(message)s')
         file_handler.setFormatter(file_formatter)
-        self.logger.addHandler(file_handler)
+        self.log.addHandler(file_handler)
 
-    def _create_logger_title(self):
+    def _create_log_title(self):
         """创建专用于标题日志的日志器."""
-        self.logger_title = logging.getLogger('StarRailAuto_title')
-        self.logger_title.propagate = False
-        self.logger_title.setLevel(self._level)
+        self.log_title = logging.getLogger('StarRailAuto_title')
+        self.log_title.propagate = False
+        self.log_title.setLevel(self._level)
 
         # 控制台日志
         console_handler = logging.StreamHandler()
         console_formatter = logging.Formatter('%(message)s')
         console_handler.setFormatter(console_formatter)
-        self.logger_title.addHandler(console_handler)
+        self.log_title.addHandler(console_handler)
 
         # 文件日志
         self._ensure_log_directory_exists()
         file_handler = logging.FileHandler(f"./logs/{self._current_datetime()}.log", encoding="utf-8")
         file_formatter = logging.Formatter('%(message)s')
         file_handler.setFormatter(file_formatter)
-        self.logger_title.addHandler(file_handler)
+        self.log_title.addHandler(file_handler)
 
     def _ensure_log_directory_exists(self):
         """确保日志目录存在，不存在则创建."""
@@ -73,23 +73,23 @@ class Logger(metaclass=SingletonMeta):
 
     def info(self, message):
         """记录INFO级别的日志."""
-        self.logger.info(message)
+        self.log.info(message)
 
     def debug(self, message):
         """记录DEBUG级别的日志."""
-        self.logger.debug(message)
+        self.log.debug(message)
 
     def warning(self, message):
         """记录WARNING级别的日志."""
-        self.logger.warning(message)
+        self.log.warning(message)
 
     def error(self, message):
         """记录ERROR级别的日志."""
-        self.logger.error(message)
+        self.log.error(message)
 
     def critical(self, message):
         """记录CRITICAL级别的日志."""
-        self.logger.critical(message)
+        self.log.critical(message)
 
     def hr(self, title, level: Literal[0, 1, 2] = 0, write=True):
         """
@@ -143,6 +143,6 @@ class Logger(metaclass=SingletonMeta):
     def _print_title(self, title, write):
         """打印标题."""
         if write:
-            self.logger_title.info(title)
+            self.log_title.info(title)
         else:
             print(title)
