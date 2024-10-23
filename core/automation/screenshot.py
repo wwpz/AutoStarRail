@@ -33,32 +33,12 @@ class Screenshot:
         return False
 
     @staticmethod
-    def take_screenshot(title, crop=(0, 0, 1, 1)):
+    def take_screenshot(title):
         window = Screenshot.get_window(title)
         if window:
             left, top, width, height = Screenshot.get_window_region(window)
-
-            screenshot = pyautogui.screenshot(region=(
-                int(left + width * crop[0]),
-                int(top + height * crop[1]),
-                int(width * crop[2]),
-                int(height * crop[3])
-            ))
-
-            real_width, _ = Screenshot.get_window_real_resolution(window)
-            if real_width > 1920:
-                screenshot_scale_factor = 1920 / real_width
-                screenshot = screenshot.resize((int(1920 * crop[2]), int(1080 * crop[3])))
-            else:
-                screenshot_scale_factor = 1
-
-            screenshot_pos = (
-                int(left + width * crop[0]),
-                int(top + height * crop[1]),
-                int(width * crop[2] * screenshot_scale_factor),
-                int(height * crop[3] * screenshot_scale_factor)
-            )
-
-            return screenshot, screenshot_pos, screenshot_scale_factor
-
+            # 截取整个窗口的截图
+            screenshot = pyautogui.screenshot(region=(left, top, width, height))
+            screenshot_pos = (left, top, width, height)
+            return screenshot, screenshot_pos
         return False

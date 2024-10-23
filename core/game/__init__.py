@@ -27,7 +27,7 @@ def start_game():
 
     def check_and_click_enter():
         # 点击进入
-        if auto.find_element("./res/food_language/basics/1.png", 0.9):
+        if auto.find_element("./res/food_language/basics/9.png", 0.9):
             return True
         # 游戏热更新，需要确认重启
         # auto.click_element("./assets/images/zh_CN/base/confirm.png", "image", 0.9, take_screenshot=False)

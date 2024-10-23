@@ -41,18 +41,17 @@ class Automation(metaclass=SingletonMeta):
         self.secretly_press_key = self.input_handler.secretly_press_key
         self.press_mouse = self.input_handler.press_mouse
 
-    def take_screenshot(self, crop=(0, 0, 1, 1)):
+    def take_screenshot(self):
         """
         捕获游戏窗口的截图。
-        :param crop: 截图的裁剪区域，格式为(x1, y1, x2, y2)，默认为全屏。
-        :return: 成功时返回截图及其位置和缩放因子，失败时抛出异常。
+        :return: 成功时返回截图及其位置，失败时抛出异常。
         """
         start_time = time.time()
         while True:
             try:
-                result = Screenshot.take_screenshot(self.window_title, crop=crop)
+                result = Screenshot.take_screenshot(self.window_title)
                 if result:
-                    self.screenshot, self.screenshot_pos, self.screenshot_scale_factor = result
+                    self.screenshot, self.screenshot_pos = result
                     return result
                 else:
                     self.log.error("截图失败：没有找到游戏窗口")
@@ -69,12 +68,13 @@ class Automation(metaclass=SingletonMeta):
         :param max_loc: 最佳匹配位置。
         :return: 匹配位置的中心坐标。
         """
-        try:
-            channels, width, height = template.shape[::-1]
-        except ValueError:
-            width, height = template.shape[::-1]
-        center_x = int(max_loc[0] / self.screenshot_scale_factor) + int(width / (2 * self.screenshot_scale_factor))
-        center_y = int(max_loc[1] / self.screenshot_scale_factor) + int(height / (2 * self.screenshot_scale_factor))
+        # 获取模板的宽度和高度
+        width, height = template.shape[1], template.shape[0]
+
+        # 计算中心坐标
+        center_x = max_loc[0] + width // 2
+        center_y = max_loc[1] + height // 2
+        self.log.infos(center_x,center_y)
         return center_x, center_y
 
     def find_element(self, target, threshold=None, max_retries=1, take_screenshot=True):
@@ -106,24 +106,24 @@ class Automation(metaclass=SingletonMeta):
                     if mask is not None:
                         matchVal, matchLoc = ImageUtils.scale_and_match_template(screenshot, template, threshold, mask)  # 执行匹配模板
                     else:
-                        matchVal, matchLoc = ImageUtils.scale_and_match_template(screenshot, template, threshold)  # 执行匹配模板
+                        matchVal, matchLoc = ImageUtils.scale_and_match_template(screenshot, template, threshold,None)  # 执行匹配模板
 
-                    self.log.debug(f"目标图片：{target.replace('./assets/images/', '')} 相似度：{matchVal:.2f}")
+                    self.log.debug(f"目标图片：{target.replace('./res/', '')} 相似度：{matchVal:.2f}")
 
                     # # 获取模板图像的宽度和高度
-                    template_width = template.shape[1]
-                    template_height = template.shape[0]
-
-                    # 在输入图像上绘制矩形框
-                    top_left = matchLoc
-                    bottom_right = (top_left[0] + template_width, top_left[1] + template_height)
-                    cv2.rectangle(screenshot, top_left, bottom_right, (0, 255, 0), 2)
-
-                    # 显示标记了匹配位置的图像
-                    resized_img = cv2.resize(screenshot, (640, 480))
-                    cv2.imshow('Matched Image', resized_img)
-                    cv2.waitKey(0)
-                    cv2.destroyAllWindows()
+                    # template_width = template.shape[1]
+                    # template_height = template.shape[0]
+                    #
+                    # # 在输入图像上绘制矩形框
+                    # top_left = matchLoc
+                    # bottom_right = (top_left[0] + template_width, top_left[1] + template_height)
+                    # cv2.rectangle(screenshot, top_left, bottom_right, (0, 255, 0), 2)
+                    #
+                    # # 显示标记了匹配位置的图像
+                    # resized_img = cv2.resize(screenshot, (640, 480))
+                    # cv2.imshow('Matched Image', resized_img)
+                    # cv2.waitKey(0)
+                    # cv2.destroyAllWindows()
 
                     if mask is not None:
                         if not math.isinf(matchVal) and (threshold is None or matchVal <= threshold):

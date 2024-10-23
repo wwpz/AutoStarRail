@@ -75,6 +75,12 @@ class Log(metaclass=SingletonMeta):
         """记录INFO级别的日志."""
         self.log.info(message)
 
+    def infos(self, *args):
+        """记录INFO级别的日志."""
+        if args:
+            message = " ".join(str(arg) for arg in args)
+            self.log.info(message)
+
     def debug(self, message):
         """记录DEBUG级别的日志."""
         self.log.debug(message)

@@ -31,6 +31,9 @@ class ImageUtils:
         else:
             result = cv2.matchTemplate(screenshot, template, cv2.TM_CCOEFF_NORMED)
         _, max_val, _, max_loc = cv2.minMaxLoc(result)
+        # 检查最大匹配值是否满足阈值要求
+        if threshold is not None and max_val < threshold:
+            return None, None
 
         return max_val, max_loc
 
