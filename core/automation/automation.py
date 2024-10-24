@@ -74,10 +74,10 @@ class Automation(metaclass=SingletonMeta):
         # 计算中心坐标
         center_x = max_loc[0] + width // 2
         center_y = max_loc[1] + height // 2
-        self.log.infos(center_x,center_y)
+        self.log.infos(center_x, center_y)
         return center_x, center_y
 
-    def find_element(self, target, threshold=None, max_retries=1, take_screenshot=True):
+    def find_element(self, target, threshold, max_retries, take_screenshot=True):
         """
         查找元素，并返回中心点
         :param target: 图片路径
@@ -104,9 +104,11 @@ class Automation(metaclass=SingletonMeta):
                         self.img_cache[target] = {'mask': mask, 'template': template}
                     screenshot = cv2.cvtColor(np.array(self.screenshot), cv2.COLOR_BGR2RGB)  # 将截图转换为RGB
                     if mask is not None:
-                        matchVal, matchLoc = ImageUtils.scale_and_match_template(screenshot, template, threshold, mask)  # 执行匹配模板
+                        matchVal, matchLoc = ImageUtils.scale_and_match_template(screenshot, template, threshold,
+                                                                                 mask)  # 执行匹配模板
                     else:
-                        matchVal, matchLoc = ImageUtils.scale_and_match_template(screenshot, template, threshold,None)  # 执行匹配模板
+                        matchVal, matchLoc = ImageUtils.scale_and_match_template(screenshot, template, threshold,
+                                                                                 None)  # 执行匹配模板
 
                     self.log.debug(f"目标图片：{target.replace('./res/', '')} 相似度：{matchVal:.2f}")
 
@@ -138,3 +140,47 @@ class Automation(metaclass=SingletonMeta):
             if i < max_retries - 1:
                 time.sleep(1)  # 在重试前等待一定时间
         return None
+
+    def click_element_with_pos(self, coordinates, action="click"):
+        """
+        在指定坐标上执行点击操作。
+
+        参数:
+        :param coordinates: 元素的坐标。
+        :param action: 执行的动作，包括'click', 'down', 'move'。
+
+        返回:
+        - 如果操作成功，则返回True；否则返回False。
+        """
+        x, y, matchVal = coordinates
+        # 动作到方法的映射
+        action_map = {
+            "click": self.mouse_click,
+            "down": self.mouse_down,
+            "move": self.mouse_move,
+        }
+
+        if action in action_map:
+            action_map[action](x, y)
+        else:
+            raise ValueError(f"未知的动作类型: {action}")
+
+        return True
+
+    def click_element(self, target, threshold=0.9, max_retries=1, action="click"):
+        """
+        查找并点击屏幕上的元素。
+
+        参数:
+        :param target: 图片路径
+        :param threshold: 查找阈值，用于图像查找时的相似度匹配。
+        :param max_retries: 最大重试次数。
+        :param action: 执行的动作。
+
+        返回:
+        如果找到元素并点击成功，则返回True；否则返回False。
+        """
+        coordinates = self.find_element(target, threshold, max_retries)
+        if coordinates:
+            return self.click_element_with_pos(coordinates, action)
+        return False

@@ -1,0 +1,4 @@
+# 游戏设置
+game_title_name: 崩坏：星穹铁道 # 游戏窗口标题。
+game_process_name: StarRail # 游戏进程名。
+game_path: C:\Program Files\Star Rail\Game\StarRail.exe # 游戏安装路径。

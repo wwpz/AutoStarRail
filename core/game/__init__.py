@@ -27,7 +27,7 @@ def start_game():
 
     def check_and_click_enter():
         # 点击进入
-        if auto.find_element("./res/food_language/basics/9.png", 0.9):
+        if auto.click_element("./res/food_language/basics/9.png"):
             return True
         # 游戏热更新，需要确认重启
         # auto.click_element("./assets/images/zh_CN/base/confirm.png", "image", 0.9, take_screenshot=False)
@@ -48,17 +48,18 @@ def start_game():
         #         raise Exception("账号登录过期")
         return False
 
-    for retry in range(MAX_RETRY):
+    for retry in range(1, MAX_RETRY + 1):
+        log.info(f"进行第 {retry} 次启动游戏")
         try:
             if not starrail.start_game():
                 raise Exception("启动游戏失败")
             time.sleep(10)
 
-
             if not wait_until(lambda: check_and_click_enter(), 10):
                 raise TimeoutError("获取当前界面超时")
+
             break  # 成功启动游戏，跳出重试循环
         except Exception as e:
             log.error(f"尝试启动游戏时发生错误：{e}")
-            if retry == MAX_RETRY - 1:
+            if retry == MAX_RETRY:
                 raise  # 如果是最后一次尝试，则重新抛出异常

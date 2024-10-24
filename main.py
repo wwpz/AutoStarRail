@@ -3,6 +3,7 @@ import sys
 import pyuac
 import atexit
 import core.game as game
+import core.simulator_game as simulator_game
 
 from core.log import log
 
@@ -22,6 +23,8 @@ def run_main_actions():
     while True:
         game.start()
 
+def run_simulator_game_actions():
+    simulator_game.start()
 
 def first_run():
     log.info("启动成功")
@@ -39,6 +42,9 @@ def main(action=None):
     # 完整运行
     if action is None or action == "main":
         run_main_actions()
+
+    elif action == "simulator_game":
+        run_simulator_game_actions()
 
     else:
         log.error(f"未知任务: {action}")
