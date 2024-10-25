@@ -64,13 +64,11 @@ class ImageUtils:
         template = cv2.imread(target, cv2.IMREAD_UNCHANGED)  # 保留图片的透明通道
         if template is None:
             raise ValueError(f"读取图片失败：{target}")
-
         mask = None
         if template.shape[-1] == 4:  # 检查通道数是否为4（含有透明通道）
             alpha_channel = template[:, :, 3]
             if np.any(alpha_channel < 255):  # 检查是否存在非完全透明的像素
                 mask = alpha_channel
-
         return mask
 
     @staticmethod

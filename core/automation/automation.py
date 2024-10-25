@@ -49,6 +49,7 @@ class Automation(metaclass=SingletonMeta):
         start_time = time.time()
         while True:
             try:
+                self.log.info("正在捕获游戏窗口截图")
                 result = Screenshot.take_screenshot(self.window_title)
                 if result:
                     self.screenshot, self.screenshot_pos = result
@@ -77,23 +78,16 @@ class Automation(metaclass=SingletonMeta):
         self.log.infos(center_x, center_y)
         return center_x, center_y
 
-    def find_element(self, target, threshold, max_retries, take_screenshot=True):
-        """
-        查找元素，并返回中心点
-        :param target: 图片路径
-        :param threshold: 查找阈值，用于图像查找时的相似度匹配。
-        :param max_retries: 最大重试次数。
-        :param take_screenshot: 是否需要先截图。
-        :return: 查找到的图像中心点位置（x,y）。
-        """
+    def find_element(self, target, threshold=0.9, max_retries=2, take_screenshot=True):
+        self.log.debug(f"本次查找的图片路径为------：{target.replace('./res/', '')}")
         max_retries = 1 if not take_screenshot else max_retries
         for i in range(max_retries):
             if take_screenshot:
                 # 捕获游戏窗口，判断是否在游戏窗口内进行截图
                 screenshot_result = self.take_screenshot()
                 if not screenshot_result:
+                    self.log.info("截图失败")
                     continue  # 如果截图失败，则跳过本次循环
-
                 try:
                     if target in self.img_cache:
                         mask = self.img_cache[target]['mask']
@@ -136,6 +130,7 @@ class Automation(metaclass=SingletonMeta):
                             top_left, bottom_right = self.calculate_center_position(template, matchLoc)
                             return top_left, bottom_right, matchVal
                 except Exception as e:
+                    self.log.info(f"目标图片路径未找到------：{target.replace('./res/', '')}")
                     self.log.error(f"寻找图片出错：{e}")
             if i < max_retries - 1:
                 time.sleep(1)  # 在重试前等待一定时间
@@ -167,7 +162,7 @@ class Automation(metaclass=SingletonMeta):
 
         return True
 
-    def click_element(self, target, threshold=0.9, max_retries=1, action="click"):
+    def click_element(self, target, threshold=0.9, max_retries=2, action="click"):
         """
         查找并点击屏幕上的元素。
 

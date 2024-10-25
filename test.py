@@ -50,12 +50,13 @@ def get_window_rect(hwnd):
 
 # 展示窗口
 # rect = get_window_rect(target_hwnd)
+# time.sleep(2)
 # if rect is not None:
 #     x1, y1, x2, y2 = rect
 #     print(f"捕获的窗口矩形: ({x1}, {y1}, {x2}, {y2})")
 #
 #     # 找home
-#     target = './res/food_language/basics/10.png'
+#     target = './res/food_language/basics/game_home_close.png'
 #     template = cv2.imread(target)  # 读取模板图片
 #     # 获取模板图像的宽度和高度
 #     template_width = template.shape[1]
@@ -110,6 +111,84 @@ def set_foreground_window_with_retry(hwnd):
         if ctypes.windll.user32.SetForegroundWindow(hwnd) == 0:
             raise Exception("设置窗口前景失败")
 
-set_foreground_window_with_retry(target_hwnd)
-time.sleep(2)
-auto.press_key("f11")
+
+import psutil
+import win32gui
+import win32process
+import os
+
+def get_process_name_from_hwnd(hwnd):
+    try:
+        # 获取窗口句柄对应的进程ID
+        pid = win32process.GetWindowThreadProcessId(hwnd)[1]
+        # 使用psutil获取进程信息
+        process = psutil.Process(pid)
+        return process.name()
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
+
+
+# 示例用法
+hwnd = target_hwnd  # 替换为你要查询的窗口句柄
+process_name = get_process_name_from_hwnd(hwnd)
+
+if process_name:
+    print(f"Process name for HWND {hwnd}: {process_name}")
+else:
+    print(f"No process found for HWND {hwnd} or an error occurred.")
+
+
+def terminate_named_process(target_process_name, termination_timeout=10):
+    """
+    根据进程名终止属于当前用户的进程。
+
+    参数:
+    - target_process_name (str): 要终止的进程名。
+    - termination_timeout (int, optional): 终止进程前等待的超时时间（秒）。
+
+    返回值:
+    - bool: 如果成功终止进程则返回True，否则返回False。
+    """
+    system_username = os.getlogin()  # 获取当前系统用户名
+    # 遍历所有运行中的进程
+    for process in psutil.process_iter(attrs=["pid", "name"]):
+        # 检查当前进程名是否匹配并属于当前用户
+        if target_process_name in process.info["name"]:
+            process_username = process.username().split("\\")[-1]  # 从进程所有者中提取用户名
+            if system_username == process_username:
+                proc_to_terminate = psutil.Process(process.info["pid"])
+                proc_to_terminate.terminate()  # 尝试终止进程
+                proc_to_terminate.wait(termination_timeout)  # 等待进程终止
+
+
+def stop_game():
+    """终止游戏"""
+    try:
+        # os.system(f'taskkill /f /im {self.process_name}')
+        terminate_named_process("MuMuPlayer")
+        print(f"游戏终止：MuMuPlayer")
+        return True
+    except Exception as e:
+        print(f"终止游戏时发生错误：{e}")
+        return False
+
+stop_game()
+
+# set_foreground_window_with_retry(target_hwnd)
+# time.sleep(2)
+# auto.press_key("f11")
+def take_screenshot(title):
+    window = Screenshot.get_window(title)
+    if window:
+        left, top, width, height = Screenshot.get_window_region(window)
+        # 截取整个窗口的截图
+        screenshot = pyautogui.screenshot(region=(left, top, width, height))
+        screenshot_pos = (left, top, width, height)
+        return screenshot, screenshot_pos
+    return False
+
+time.sleep(5)
+print(take_screenshot("MuMu模拟器12"))
+
+
