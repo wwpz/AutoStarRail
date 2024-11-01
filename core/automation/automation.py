@@ -1,6 +1,8 @@
 import cv2
 import time
 import math
+import os
+import datetime
 import numpy as np
 
 from .input import Input
@@ -81,6 +83,9 @@ class Automation(metaclass=SingletonMeta):
     def find_element(self, target, threshold=0.9, max_retries=2, take_screenshot=True):
         self.log.debug(f"本次查找的图片路径为------：{target.replace('./res/', '')}")
         max_retries = 1 if not take_screenshot else max_retries
+        timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+        save_dir = f'./res/food_language/test_screenshot/{timestamp}'
+        os.makedirs(save_dir, exist_ok=True)  # 在循环前创建目录
         for i in range(max_retries):
             if take_screenshot:
                 # 捕获游戏窗口，判断是否在游戏窗口内进行截图
@@ -97,13 +102,17 @@ class Automation(metaclass=SingletonMeta):
                         template = cv2.imread(target)  # 读取模板图片
                         self.img_cache[target] = {'mask': mask, 'template': template}
                     screenshot = cv2.cvtColor(np.array(self.screenshot), cv2.COLOR_BGR2RGB)  # 将截图转换为RGB
+                    # 测试时保存截图
+                    base_name = target.replace("./res/", "").split('/')[0]
+                    # 构建保存路径，包括基于时间戳的文件夹和文件名
+                    save_path = os.path.join(save_dir, f'{base_name}_{timestamp}.jpg')
+                    cv2.imwrite(save_path, screenshot)  # 使用 OpenCV 保存图像
                     if mask is not None:
                         matchVal, matchLoc = ImageUtils.scale_and_match_template(screenshot, template, threshold,
                                                                                  mask)  # 执行匹配模板
                     else:
                         matchVal, matchLoc = ImageUtils.scale_and_match_template(screenshot, template, threshold,
                                                                                  None)  # 执行匹配模板
-
                     self.log.debug(f"目标图片：{target.replace('./res/', '')} 相似度：{matchVal:.2f}")
 
                     # # 获取模板图像的宽度和高度

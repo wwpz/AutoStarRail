@@ -95,8 +95,8 @@ def start_game():
             auto.mouse_click(500,500)
             time.sleep(1)
             auto.mouse_click(500, 500)
-            # time.sleep(5)
-            if not wait_until_retries(auto.click_element("./res/food_language/basics/game_home_close.png"), 5,5):
+            time.sleep(5)
+            if not wait_until_retries(auto.click_element("./res/food_language/basics/game_home_close.png"), 5,5,2):
                 log.error("进入游戏后-主页公告栏未找到,请检查错误截图")
             auto_login()
         else:

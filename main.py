@@ -4,6 +4,7 @@ import pyuac
 import atexit
 import core.game as game
 import core.simulator_game as simulator_game
+import core.tasks.reward as reward
 
 from core.log import log
 
@@ -26,6 +27,9 @@ def run_main_actions():
 def run_simulator_game_actions():
     simulator_game.start()
 
+def run_reward_tasks():
+    reward.start_specific("signin")
+
 def first_run():
     log.info("启动成功")
     input("按回车键关闭窗口. . .")
@@ -45,6 +49,9 @@ def main(action=None):
 
     elif action == "simulator_game":
         run_simulator_game_actions()
+
+    elif action == "reward":
+        run_reward_tasks()
 
     else:
         log.error(f"未知任务: {action}")

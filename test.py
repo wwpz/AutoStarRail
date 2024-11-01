@@ -175,20 +175,55 @@ def stop_game():
 
 stop_game()
 
+
+def wait_until_retries(condition, timeout, period=1, retries=2):
+    """
+    等待直到条件满足或超时，最多重试retries次
+    参数:
+    condition: 函数，返回布尔值，表示条件是否满足
+    timeout: 每次尝试的超时时间，单位为秒
+    period: 每次检查条件之间的等待时间，单位为秒，默认为1秒
+    retries: 最大重试次数，默认重试3次
+    """
+    for attempt in range(1, retries + 1):
+        print(f"第 {attempt} 次尝试，共 {retries} 次")
+        end_time = time.time() + timeout
+        while time.time() < end_time:
+            try:
+                if condition():
+                    return True
+            except Exception as e:
+                print(f"等待中出现异常--忽略: {e}")
+            time.sleep(period)
+        return False
+
 # set_foreground_window_with_retry(target_hwnd)
 # time.sleep(2)
 # auto.press_key("f11")
-def take_screenshot(title):
-    window = Screenshot.get_window(title)
-    if window:
-        left, top, width, height = Screenshot.get_window_region(window)
-        # 截取整个窗口的截图
-        screenshot = pyautogui.screenshot(region=(left, top, width, height))
-        screenshot_pos = (left, top, width, height)
-        return screenshot, screenshot_pos
-    return False
+# def take_screenshot(title):
+#     window = Screenshot.get_window(title)
+#     if window:
+#         left, top, width, height = Screenshot.get_window_region(window)
+#         # 截取整个窗口的截图
+#         screenshot = pyautogui.screenshot(region=(left, top, width, height))
+#         screenshot_pos = (left, top, width, height)
+#         return screenshot, screenshot_pos
+#     return False
+#
+# time.sleep(5)
+# screenshot,screenshot_pos = take_screenshot("MuMu模拟器12")
+# print(take_screenshot("MuMu模拟器12"))
+#
+#
+# # 显示标记了匹配位置的图像
+# screenshot1 = cv2.cvtColor(np.array(screenshot), cv2.COLOR_BGR2RGB)  # 将截图转换为RGB
+# resized_img = cv2.resize(screenshot1, (640, 480))
+# cv2.imshow('Matched Image', resized_img)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
 
-time.sleep(5)
-print(take_screenshot("MuMu模拟器12"))
+def testPin():
+    print("Ok")
+    re
 
-
+wait_until_retries(testPin,5,5)

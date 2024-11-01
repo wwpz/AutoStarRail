@@ -164,3 +164,4 @@ cython_debug/
 #pycharm .idea
 mall/.idea/*
 .idea/*
+res/food_language/test_screenshot
