@@ -2,7 +2,6 @@ import cv2
 import time
 import math
 import os
-import datetime
 import numpy as np
 
 from .input import Input
@@ -83,9 +82,6 @@ class Automation(metaclass=SingletonMeta):
     def find_element(self, target, threshold=0.9, max_retries=2, take_screenshot=True):
         self.log.debug(f"本次查找的图片路径为------：{target.replace('./res/', '')}")
         max_retries = 1 if not take_screenshot else max_retries
-        timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
-        save_dir = f'./res/food_language/test_screenshot/{timestamp}'
-        os.makedirs(save_dir, exist_ok=True)  # 在循环前创建目录
         for i in range(max_retries):
             if take_screenshot:
                 # 捕获游戏窗口，判断是否在游戏窗口内进行截图
@@ -105,14 +101,15 @@ class Automation(metaclass=SingletonMeta):
                     # 测试时保存截图
                     base_name = target.replace("./res/", "").split('/')[0]
                     # 构建保存路径，包括基于时间戳的文件夹和文件名
-                    save_path = os.path.join(save_dir, f'{base_name}_{timestamp}.jpg')
-                    cv2.imwrite(save_path, screenshot)  # 使用 OpenCV 保存图像
+                    save_path = os.path.join(self.log.save_dir, f'{base_name}_{self.log.timestamp}.jpg')
+                    # 使用 OpenCV 保存图像
+                    cv2.imwrite(save_path, screenshot)
                     if mask is not None:
-                        matchVal, matchLoc = ImageUtils.scale_and_match_template(screenshot, template, threshold,
-                                                                                 mask)  # 执行匹配模板
+                        # 执行匹配模板
+                        matchVal, matchLoc = ImageUtils.scale_and_match_template(screenshot, template, threshold,mask)
                     else:
-                        matchVal, matchLoc = ImageUtils.scale_and_match_template(screenshot, template, threshold,
-                                                                                 None)  # 执行匹配模板
+                        # 执行匹配模板
+                        matchVal, matchLoc = ImageUtils.scale_and_match_template(screenshot, template, threshold,None)
                     self.log.debug(f"目标图片：{target.replace('./res/', '')} 相似度：{matchVal:.2f}")
 
                     # # 获取模板图像的宽度和高度

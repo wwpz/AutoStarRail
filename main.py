@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 import pyuac
 import atexit
 import core.game as game
@@ -28,7 +29,7 @@ def run_simulator_game_actions():
     simulator_game.start()
 
 def run_reward_tasks():
-    reward.start_specific("signin")
+    reward.start()
 
 def first_run():
     log.info("启动成功")
@@ -45,7 +46,9 @@ def main(action=None):
 
     # 完整运行
     if action is None or action == "main":
-        run_main_actions()
+        run_simulator_game_actions()
+        time.sleep(5)
+        run_reward_tasks()
 
     elif action == "simulator_game":
         run_simulator_game_actions()

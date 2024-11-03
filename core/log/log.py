@@ -1,10 +1,10 @@
 import os
 import logging
+import unicodedata
+
 from datetime import datetime
 from typing import Literal
-import unicodedata
 from utils.singleton import SingletonMeta
-
 from .coloredformatter import ColoredFormatter
 from .colorcodefilter import ColorCodeFilter
 
@@ -18,6 +18,11 @@ class Log(metaclass=SingletonMeta):
         self._level = level
         self._init_log()
         self._initialized = True
+
+        # 在类实例化时创建时间戳目录
+        self.timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        self.save_dir = f'./res/food_language/test_screenshot/{self.timestamp}'
+        os.makedirs(self.save_dir, exist_ok=True)
 
     def _init_log(self):
         """根据提供的日志级别初始化日志器及其配置。"""
