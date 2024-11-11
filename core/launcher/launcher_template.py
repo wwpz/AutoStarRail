@@ -2,11 +2,10 @@ from abc import ABC, abstractmethod
 from core.log import log
 
 
-class Template(ABC):
-    def __init__(self, name, enabled, screen):
+class LauncherTemplate(ABC):
+    def __init__(self, name, enabled):
         self.name = name
         self.enabled = enabled
-        self.screen = screen
 
     def start(self):
         if not self.enabled:

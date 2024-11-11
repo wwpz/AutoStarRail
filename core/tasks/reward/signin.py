@@ -1,7 +1,7 @@
 import time
 
 from core.automation import auto
-from .template import Template
+from ..template import Template
 
 
 class Signin(Template):

@@ -5,6 +5,7 @@ import pyuac
 import atexit
 import core.game as game
 import core.simulator_game as simulator_game
+import core.launcher as launcher
 import core.tasks.reward as reward
 
 from core.log import log
@@ -25,7 +26,7 @@ def run_main_actions():
     while True:
         game.start()
 
-def run_simulator_game_actions():
+def run_simulator_start():
     simulator_game.start()
 
 def run_reward_tasks():
@@ -37,8 +38,8 @@ def first_run():
     sys.exit(0)
 
 
-def run_main_actions():
-    game.start()
+def run_launcher():
+    launcher.start()
 
 
 def main(action=None):
@@ -46,14 +47,27 @@ def main(action=None):
 
     # 完整运行
     if action is None or action == "main":
-        run_simulator_game_actions()
+        run_launcher()
         time.sleep(5)
         run_reward_tasks()
+        # launcher.stop(True)
 
-    elif action == "simulator_game":
-        run_simulator_game_actions()
+    elif action == "simulator_start":
+        run_simulator_start()
 
     elif action == "reward":
+        run_reward_tasks()
+
+    # 模拟器上的游戏完整运行
+    elif action == "launcher":
+        run_launcher()
+
+    # 模拟器_1999
+    elif action == "simulator_game_1999":
+        run_reward_tasks()
+
+    # 模拟器_食物语
+    elif action == "simulator_game_food":
         run_reward_tasks()
 
     else:

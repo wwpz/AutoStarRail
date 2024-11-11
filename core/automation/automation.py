@@ -5,9 +5,10 @@ import os
 import numpy as np
 
 from .input import Input
-from .screenshot import Screenshot
 from typing import Optional
 from core.log.log import Log
+from datetime import datetime
+from .screenshot import Screenshot
 from utils.singleton import SingletonMeta
 from utils.image_utils import ImageUtils
 
@@ -50,7 +51,7 @@ class Automation(metaclass=SingletonMeta):
         start_time = time.time()
         while True:
             try:
-                self.log.info("正在捕获游戏窗口截图")
+                self.log.debug("正在捕获游戏窗口截图")
                 result = Screenshot.take_screenshot(self.window_title)
                 if result:
                     self.screenshot, self.screenshot_pos = result
@@ -76,10 +77,10 @@ class Automation(metaclass=SingletonMeta):
         # 计算中心坐标
         center_x = max_loc[0] + width // 2
         center_y = max_loc[1] + height // 2
-        self.log.infos(center_x, center_y)
         return center_x, center_y
 
     def find_element(self, target, threshold=0.9, max_retries=2, take_screenshot=True):
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         self.log.debug(f"本次查找的图片路径为------：{target.replace('./res/', '')}")
         max_retries = 1 if not take_screenshot else max_retries
         for i in range(max_retries):
@@ -101,7 +102,7 @@ class Automation(metaclass=SingletonMeta):
                     # 测试时保存截图
                     base_name = target.replace("./res/", "").split('/')[0]
                     # 构建保存路径，包括基于时间戳的文件夹和文件名
-                    save_path = os.path.join(self.log.save_dir, f'{base_name}_{self.log.timestamp}.jpg')
+                    save_path = os.path.join(self.log.save_dir, f'{base_name}_{timestamp}.jpg')
                     # 使用 OpenCV 保存图像
                     cv2.imwrite(save_path, screenshot)
                     if mask is not None:
@@ -136,8 +137,8 @@ class Automation(metaclass=SingletonMeta):
                             top_left, bottom_right = self.calculate_center_position(template, matchLoc)
                             return top_left, bottom_right, matchVal
                 except Exception as e:
-                    self.log.info(f"目标图片路径未找到------：{target.replace('./res/', '')}")
-                    self.log.error(f"寻找图片出错：{e}")
+                    self.log.debug(f"目标图片路径未找到------：{target.replace('./res/', '')}")
+                    self.log.debug(f"寻找图片出错：{e}")
             if i < max_retries - 1:
                 time.sleep(1)  # 在重试前等待一定时间
         return None

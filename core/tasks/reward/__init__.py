@@ -7,8 +7,8 @@ from core.automation import auto
 class Reward:
 
     def __init__(self):
-        self.mail = Mail("邮件", "true", "mail")
-        self.signin = Signin("签到", "true", "signin")
+        self.mail = Mail("邮件", "true")
+        self.signin = Signin("签到", "true")
 
         self.reward_instances = {
             "mail": self.mail,

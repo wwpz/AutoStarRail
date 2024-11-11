@@ -153,8 +153,9 @@ def start_game():
 
             break  # 成功启动游戏，跳出重试循环
         except Exception as e:
-            log.error(f"尝试启动模拟器时发生错误：{e}")
-            if retry == MAX_RETRY:
+            log.error(f"尝试启动游戏时发生错误：{e}")
+            starrail.stop_game()  # 确保在重试前停止游戏
+            if retry == MAX_RETRY - 1:
                 raise  # 如果是最后一次尝试，则重新抛出异常
 
 def auto_login():
