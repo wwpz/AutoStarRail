@@ -6,9 +6,8 @@ from core.log import log
 from .game_launcher import GameLauncher
 from core.automation import auto
 
-launch = GameLauncher("E:\\MuMu Player 12\\shell\\MuMuPlayer.exe", "MuMuPlayer", "1999", "MuMu模拟器12",
-                      "Qt5156QWindowIcon",
-                      log)
+launch = GameLauncher("E:\\MuMu Player 12\\shell\\MuMuPlayer.exe", "MuMuPlayer", "food_language", "MuMu模拟器12",
+                      "Qt5156QWindowIcon",log)
 
 
 def start():
@@ -78,7 +77,6 @@ def launcher_simulator_game():
         # auto.click_element("./assets/images/screen/start_game.png", "image", 0.9, take_screenshot=False)
         # 适配B服，需要点击“登录”
         # auto.click_element("./assets/images/screen/bilibili_login.png", "image", 0.9, take_screenshot=False)
-
         # 登录过期
         # if auto.find_element("./assets/images/screen/account_and_password.png", "image", 0.9, take_screenshot=False):
         #     if load_acc_and_pwd(gamereg_uid()) != (None, None):
@@ -89,7 +87,7 @@ def launcher_simulator_game():
     else:
         log.info("正在启动" + "1999" + "中....")
         if auto.click_element("./res/1999/basics/startup_icon.png"):
-            time.sleep(30)
+            time.sleep(40)
                 # log.debug("游戏第一次启动语音资源问题?")
                 # if auto.find_element("./res/1999/basics/update_1.png"):
                 #     auto.click_element("./res/1999/basics/next_button.png")
@@ -97,10 +95,6 @@ def launcher_simulator_game():
                 # if auto.find_element("./res/1999/basics/update_2.png"):
                 #     time.sleep(3)
                 #     auto.click_element("./res/1999/basics/download_button.png")
-        if auto.find_element("./res/1999/basics/login_tag.png") and auto.find_element("./res/1999/basics/logout_button.png"):
-            auto.mouse_click(500, 500)
-            time.sleep(1)
-            auto.mouse_click(500, 500)
         return False
 
 
@@ -118,7 +112,16 @@ def login_simulator_game():
             # 判断是否需要登录账号,无则需要登录
             # 登录账号方式是否为账号密码登录,是则使用账号密码
     else:
-        print("1999")
+        if auto.find_element("./res/1999/basics/login_tag.png"):
+            time.sleep(5)
+            if auto.find_element("./res/1999/basics/logout_button.png"):
+                auto.mouse_click(500, 500)
+                time.sleep(1)
+                auto.mouse_click(500, 500)
+                time.sleep(5)
+                log.info("登录成功...")
+        else:
+            print("手动登录账号（暂时不确定）")
 
 def check_starrail_init():
     print("星铁启动")

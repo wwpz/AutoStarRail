@@ -3,9 +3,10 @@ from core.log import log
 
 
 class Template(ABC):
-    def __init__(self, name, enabled):
+    def __init__(self, name, enabled,*game_type):
         self.name = name
         self.enabled = enabled
+        self.game_type = game_type
 
     def start(self):
         if not self.enabled:

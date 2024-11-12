@@ -50,25 +50,7 @@ def main(action=None):
         run_launcher()
         time.sleep(5)
         run_reward_tasks()
-        # launcher.stop(True)
-
-    elif action == "simulator_start":
-        run_simulator_start()
-
-    elif action == "reward":
-        run_reward_tasks()
-
-    # 模拟器上的游戏完整运行
-    elif action == "launcher":
-        run_launcher()
-
-    # 模拟器_1999
-    elif action == "simulator_game_1999":
-        run_reward_tasks()
-
-    # 模拟器_食物语
-    elif action == "simulator_game_food":
-        run_reward_tasks()
+        launcher.stop(True)
 
     else:
         log.error(f"未知任务: {action}")
