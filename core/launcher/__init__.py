@@ -2,12 +2,12 @@ import os
 import sys
 import time
 
+from core.config import cfg
 from core.log import log
 from .game_launcher import GameLauncher
 from core.automation import auto
 
-launch = GameLauncher("E:\\MuMu Player 12\\shell\\MuMuPlayer.exe", "MuMuPlayer", "food_language", "MuMu模拟器12",
-                      "Qt5156QWindowIcon",log)
+launch = GameLauncher(cfg.game_path, cfg.game_process_name, cfg.game_type,  cfg.window_name, cfg.window_class,log)
 
 
 def start():

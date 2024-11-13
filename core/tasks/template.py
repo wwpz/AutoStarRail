@@ -1,12 +1,13 @@
 from abc import ABC, abstractmethod
 from core.log import log
+from core.config import cfg
 
 
 class Template(ABC):
-    def __init__(self, name, enabled,*game_type):
+    def __init__(self, name, enabled):
         self.name = name
         self.enabled = enabled
-        self.game_type = game_type
+        self.game_type = cfg.game_type
 
     def start(self):
         if not self.enabled:

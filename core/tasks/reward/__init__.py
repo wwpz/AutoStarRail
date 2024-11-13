@@ -2,13 +2,14 @@
 from .mail import Mail
 from .signin import Signin
 from core.log import log
+from core.config import cfg
 from core.automation import auto
 
 class Reward:
 
     def __init__(self):
-        self.game_type = None
-        self.mail = Mail("邮件", "true","food_language")
+        self.game_type = cfg.game_type
+        self.mail = Mail("邮件", "true")
         self.signin = Signin("签到", "true")
 
         self.reward_instances = {
@@ -28,11 +29,6 @@ class Reward:
 
     def check_and_collect_rewards(self):
         log.hr("开始领取奖励", 0)
-        # 获取 game_type 的第一个参数
-        if self.mail.game_type:  # 确保 game_type 不为空
-            self.game_type = self.mail.game_type[0]
-        else:
-            self.game_type = None  # 如果为空，可以设置一个默认值或者处理逻辑
 
         if self.game_type == "1999":
             for reward_type, (image_path) in self.reward_1999_mapping.items():
