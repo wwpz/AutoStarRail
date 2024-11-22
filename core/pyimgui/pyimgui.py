@@ -1,6 +1,8 @@
 import sys
 import glfw
+import time
 import imgui
+import threading
 from OpenGL.GL import *
 from core.log import Log
 from ctypes import windll
@@ -8,12 +10,24 @@ from typing import Optional
 from core.config import cfg
 from imgui.integrations.glfw import GlfwRenderer
 
+import core.launcher as launcher
+import core.tasks.reward as reward
+import core.simulator_game as simulator_game
+
 #
 game_radio1 = False
 game_radio2 = False
 game_radio3 = False
 
 visible = None
+
+
+def run_reward():
+    simulator_game.start()
+    launcher.start()
+    time.sleep(5)
+    reward.start()
+
 
 class PyImgui:
     def __init__(self, log: Optional[Log] = None):
@@ -30,7 +44,7 @@ class PyImgui:
             sys.exit(1)
 
         # 创建无边框和透明的窗口
-        glfw.window_hint(glfw.FLOATING, True)  # 确保窗口总是最上层
+        glfw.window_hint(glfw.FLOATING, False)  # 确保窗口总是最上层
         glfw.window_hint(glfw.DECORATED, False)
         glfw.window_hint(glfw.TRANSPARENT_FRAMEBUFFER, True)
 
@@ -58,8 +72,8 @@ class PyImgui:
         self.hwnd = glfw.get_win32_window(self.window)
 
         # 初始设置为穿透
-        self.ex_style = windll.user32.GetWindowLongW(self.hwnd, -20)
-        windll.user32.SetWindowLongW(self.hwnd, -20, self.ex_style | 0x80000 | 0x20)
+        # self.ex_style = windll.user32.GetWindowLongW(self.hwnd, -20)
+        # windll.user32.SetWindowLongW(self.hwnd, -20, self.ex_style | 0x80000 | 0x20)
 
     def init_py_imgui(self):
         """初始化整个 PyImgui 环境"""
@@ -117,16 +131,18 @@ class PyImgui:
             imgui.end_tab_bar()
 
         # 检查鼠标是否在 ImGui 窗口内
-        is_hovering = self.is_mouse_hovering()
+        # is_hovering = self.is_mouse_hovering()
 
         if imgui.button("Start"):
-            print("start")
+            # 创建线程
+            thread1 = threading.Thread(target=run_reward)
+            thread1.start()
         imgui.same_line()
         if imgui.button("Exit"):
             glfw.set_window_should_close(self.window, True)
         imgui.end()
 
-        self.adjust_window_penetration(is_hovering)
+        # self.adjust_window_penetration(is_hovering)
 
     def render(self):
         """执行 OpenGL 渲染"""

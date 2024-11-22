@@ -1,12 +1,9 @@
 import os
 import sys
-import time
 import pyuac
 import atexit
 import core.game as game
-import core.simulator_game as simulator_game
-import core.launcher as launcher
-import core.tasks.reward as reward
+import core.pyimgui as py_imgui
 
 from core.log import log
 
@@ -26,11 +23,11 @@ def run_main_actions():
     while True:
         game.start()
 
-def run_simulator_start():
-    simulator_game.start()
-
-def run_reward_tasks():
-    reward.start()
+# def run_simulator_start():
+#     simulator_game.start()
+#
+# def run_reward_tasks():
+#     reward.start()
 
 def first_run():
     log.info("启动成功")
@@ -38,25 +35,30 @@ def first_run():
     sys.exit(0)
 
 
-def run_launcher():
-    launcher.start()
+# def run_launcher():
+#     launcher.start()
 
 
-def main(action=None):
-    # first_run()
+def main():
 
-    # 完整运行
-    if action is None or action == "main":
-        run_launcher()
-        time.sleep(5)
-        run_reward_tasks()
-        launcher.stop(True)
+    # thread2 = threading.Thread(target=task, args=("线程2", 4))
+    #
+    # # 启动线程
+    # thread1.start()
+    # thread2.start()
+    #
+    # # 等待所有线程完成
+    # thread1.join()
+    # thread2.join()
+    #
+    # print("所有线程已完成")
 
-    else:
-        log.error(f"未知任务: {action}")
-        input("按回车键关闭窗口. . .")
-        sys.exit(1)
 
+    py_imgui.start()
+    # run_launcher()
+    # time.sleep(5)
+    # run_reward_tasks()
+    # launcher.stop(True)
 
 # 程序结束时的处理器
 def exit_handler():
@@ -66,13 +68,13 @@ def exit_handler():
 if __name__ == "__main__":
     try:
         atexit.register(exit_handler)
-        main(sys.argv[1]) if len(sys.argv) > 1 else main()
+        main()
     except KeyboardInterrupt:
         log.error("发生错误: 手动强制停止")
-        input("按回车键关闭窗口. . .")
+        # input("按回车键关闭窗口. . .")
         sys.exit(1)
     except Exception as e:
         log.error("发生错误 {error}".format(error=e))
         # notif.notify(cfg.notify_template['ErrorOccurred'].format(error=e))
-        input("按回车键关闭窗口. . .")
+        # input("按回车键关闭窗口. . .")
         sys.exit(1)
