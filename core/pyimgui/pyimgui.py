@@ -12,7 +12,6 @@ from imgui.integrations.glfw import GlfwRenderer
 
 import core.launcher as launcher
 import core.tasks.reward as reward
-import core.simulator_game as simulator_game
 
 #
 game_radio1 = False
@@ -23,7 +22,6 @@ visible = None
 
 
 def run_reward():
-    simulator_game.start()
     launcher.start()
     time.sleep(5)
     reward.start()
@@ -44,17 +42,17 @@ class PyImgui:
             sys.exit(1)
 
         # 创建无边框和透明的窗口
-        glfw.window_hint(glfw.FLOATING, False)  # 确保窗口总是最上层
-        glfw.window_hint(glfw.DECORATED, False)
-        glfw.window_hint(glfw.TRANSPARENT_FRAMEBUFFER, True)
+        # glfw.window_hint(glfw.FLOATING, True)  # 确保窗口总是最上层
+        # glfw.window_hint(glfw.DECORATED, False)
+        # glfw.window_hint(glfw.TRANSPARENT_FRAMEBUFFER, True)
 
         # 获取主显示器的尺寸
-        monitor = glfw.get_primary_monitor()
-        mode = glfw.get_video_mode(monitor)
-        width, height = mode.size.width, mode.size.height
+        # monitor = glfw.get_primary_monitor()
+        # mode = glfw.get_video_mode(monitor)
+        # width, height = mode.size.width, mode.size.height
 
         # 创建窗口
-        self.window = glfw.create_window(width, height, "ImGui Transparent Overlay", None, None)
+        self.window = glfw.create_window(800, 600, "ImGui Transparent Overlay", None, None)
         if not self.window:
             glfw.terminate()
             print("Could not initialize Window")
@@ -92,7 +90,16 @@ class PyImgui:
         glfw.poll_events()
         self.impl.process_inputs()
         imgui.new_frame()
-        imgui.begin("Menu")
+
+        # 获取 GLFW 窗口当前大小
+        width, height = glfw.get_window_size(self.window)
+
+        # 设置 ImGui 窗口与 GLFW 窗口相同大小，并贴近边缘
+        imgui.set_next_window_position(0, 0)
+        imgui.set_next_window_size(width, height)
+        imgui.begin("Menu", flags=imgui.WINDOW_NO_TITLE_BAR | imgui.WINDOW_NO_RESIZE | imgui.WINDOW_NO_MOVE | imgui.WINDOW_NO_SCROLLBAR)
+
+        # imgui.begin("Menu")
         if imgui.begin_tab_bar("TabBar"):
             if imgui.begin_tab_item("Game-options").selected:
                 changed1, game_radio1 = imgui.checkbox("1999", game_radio1)
@@ -119,13 +126,12 @@ class PyImgui:
                         imgui.button("Now you see me!")
                         imgui.button("Now you see me!")
                         imgui.button("Now you see me!")
-
-
                     imgui.end_tab_item()
             if game_radio3:
-                if imgui.begin_tab_item("Honkai: Star Rail-options").selected:
-                    imgui.text("Honkai: Star Rail-button...")
-                    imgui.end_tab_item()
+                with imgui.begin_tab_item("Honkai: Star Rail-options", opened=game_radio3) as item3:
+                    game_radio3 = item3.opened
+                    if item3.selected:
+                        imgui.text("Honkai: Star Rail-button...")
 
 
             imgui.end_tab_bar()
@@ -135,8 +141,8 @@ class PyImgui:
 
         if imgui.button("Start"):
             # 创建线程
-            thread1 = threading.Thread(target=run_reward)
-            thread1.start()
+            thread = threading.Thread(target=run_reward)
+            thread.start()
         imgui.same_line()
         if imgui.button("Exit"):
             glfw.set_window_should_close(self.window, True)
