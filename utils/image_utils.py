@@ -1,7 +1,8 @@
-import math
 import cv2
 import numpy as np
+from core.log.log import Log
 
+log = Log()
 
 class ImageUtils:
     @staticmethod
@@ -17,7 +18,6 @@ class ImageUtils:
     @staticmethod
     def scale_and_match_template(screenshot, template, threshold=None, mask=None):
         """
-        对模板进行缩放并匹配至截图，找出最佳匹配位置。
         :param screenshot: 截图。
         :param template: 模板图片。
         :param threshold: 匹配阈值，小于此值的匹配将被忽略。
@@ -31,9 +31,10 @@ class ImageUtils:
         else:
             result = cv2.matchTemplate(screenshot, template, cv2.TM_CCOEFF_NORMED)
         _, max_val, _, max_loc = cv2.minMaxLoc(result)
+        log.debug(f"本次识图的结果为：max_val={max_val}, max_loc={max_loc}")
         # 检查最大匹配值是否满足阈值要求
         if threshold is not None and max_val < threshold:
-            return None, None
+            return 0.0, (-1, -1)  # 返回默认值
 
         return max_val, max_loc
 

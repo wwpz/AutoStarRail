@@ -71,6 +71,15 @@ class GameUtil:
             self.log_debug("游戏窗口未找到")
             return None
 
+    def wait_time(self, timeout, print_interval=5):
+        """等待指定时间，并每隔 print_interval 秒打印剩余时间。"""
+        end_time = time.time() + timeout
+        while time.time() < end_time:
+            remaining_time = int(end_time - time.time())  # 更新剩余时间
+            if remaining_time % print_interval == 0:
+                self.log_debug(f"剩余等待时间: {remaining_time} seconds")
+            time.sleep(1)  # 添加一个延迟，以避免快速循环
+
     def wait_until(condition, timeout, period=1):
         """等待直到条件满足或超时"""
         end_time = time.time() + timeout
@@ -80,7 +89,7 @@ class GameUtil:
             time.sleep(period)
         return False
 
-    def wait_until_retries(self,condition, timeout, period=1, retries=2):
+    def wait_until_retries(self, condition, period=5, retries=2):
         """
         等待直到条件满足或超时，最多重试retries次
         参数:
@@ -91,15 +100,14 @@ class GameUtil:
         """
         for attempt in range(1, retries + 1):
             self.log.info(f"第 {attempt} 次尝试，共 {retries} 次")
-            end_time = time.time() + timeout
-            while time.time() < end_time:
-                try:
-                    if condition():
-                        return True
-                except Exception as e:
-                    self.log.debug(f"等待中出现异常--忽略: {e}")
-                time.sleep(period)
-        return False
+            try:
+                if condition():
+                    self.log.debug("条件满足，操作成功。")
+                    return True
+            except Exception as e:
+                self.log.debug(f"等待中出现异常，忽略异常: {e}")
+            time.sleep(period)
+            self.log.debug(f"第 {attempt} 次尝试失败，条件未满足。")
 
     def stop_game(self) -> bool:
         """终止游戏"""

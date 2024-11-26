@@ -89,6 +89,6 @@ class Screenshot:
         img = np.frombuffer(bmp_str, dtype='uint8')
         img.shape = (bmp_info['bmHeight'], bmp_info['bmWidth'], 4)
 
-        # 转换为BGR格式
-        screenshot = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
+        # 转换为RGB格式，去掉alpha通道
+        screenshot = cv2.cvtColor(img, cv2.COLOR_BGRA2RGB)
         return screenshot, screenshot_pos, window

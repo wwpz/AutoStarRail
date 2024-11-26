@@ -10,6 +10,8 @@ from typing import Optional
 from core.config import cfg
 from imgui.integrations.glfw import GlfwRenderer
 
+import core.game as game
+import core.login as login
 import core.launcher as launcher
 import core.tasks.reward as reward
 
@@ -22,9 +24,12 @@ visible = None
 
 
 def run_reward():
-    launcher.start()
-    time.sleep(5)
-    reward.start()
+    if launcher.start():
+        if game.start():
+            time.sleep(5)
+            login.start()
+            time.sleep(5)
+            reward.start()
 
 
 class PyImgui:
@@ -52,7 +57,7 @@ class PyImgui:
         # width, height = mode.size.width, mode.size.height
 
         # 创建窗口
-        self.window = glfw.create_window(800, 600, "ImGui Transparent Overlay", None, None)
+        self.window = glfw.create_window(300, 200, "ImGui Transparent Overlay", None, None)
         if not self.window:
             glfw.terminate()
             print("Could not initialize Window")
@@ -143,9 +148,9 @@ class PyImgui:
             # 创建线程
             thread = threading.Thread(target=run_reward)
             thread.start()
-        imgui.same_line()
-        if imgui.button("Exit"):
-            glfw.set_window_should_close(self.window, True)
+        # imgui.same_line()
+        # if imgui.button("Exit"):
+        #     glfw.set_window_should_close(self.window, True)
         imgui.end()
 
         # self.adjust_window_penetration(is_hovering)
