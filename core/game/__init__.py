@@ -1,65 +1,61 @@
 import time
-
+from core.config import cfg
 from core.log import log
-from .starRailGame import StarRailGame
+from core.launcher import GameLauncher
 from core.automation import auto
 
-starrail = StarRailGame("E:\\MuMu Player 12\\shell\\MuMuPlayer.exe", "", "", 'UnityWndClass', log)
-
+launch = GameLauncher(cfg.game_path, cfg.game_process_name, cfg.game_type, cfg.window_name, cfg.window_class, log)
+game_state = True
 
 def start():
     log.hr("开始运行", 0)
-    start_game()
+    if launch.game_type in ["food_language", "1999"]:
+        return start_simulator_game()
+    else:
+        print("星铁")
     log.hr("完成", 2)
 
 
-def start_game():
-    MAX_RETRY = 3
-
-    def wait_until(condition, timeout, period=1):
-        """等待直到条件满足或超时"""
-        end_time = time.time() + timeout
-        while time.time() < end_time:
-            if condition():
+def start_simulator_game():
+    if launch.game_type == "food_language":
+        # 点击启动游戏
+        log.info("正在启动" + "食物语" + "中....")
+        if auto.click_element("./res/food_language/basics/startup_icon.png"):
+            launch.wait_time(40)
+            # 在正常情况下,点击游戏进入会直接有修复和资源加载的字样,通过判断则知道是否进入游戏,否则进行其它判断
+            # 游戏启动动画问题?是在检测到进入游戏后的x秒后点击画面两次跳过？还是进行12+ 图片判断点击？
+            # 适配用户协议和隐私政策更新提示，需要点击“接受”
+            # log.info("游戏是否有隐私政策更新？")
+            # if launch.wait_until_retries(auto.click_element("./res/food_language/basics/accept_update.png"), 5, 5):
+            #     log.info("启动游戏成功,已在游戏界面...隐私政策已点击接受")
+            # log.info("游戏是否有热更新？")
+            # 判断是否游戏热更新，需要确认重启
+            # if launch.wait_until_retries(auto.click_element("./res/food_language/basics/confirm.png"), 5, 5):
+            #     log.info("启动游戏成功,已在游戏界面...游戏需已点击确定更新")
+            #     if launch.wait_until(auto.click_element("./res/food_language/basics/confirm_update.png"), 300):
+            #         log.info("游戏更新成功,点击确认重启游戏中...")
+            #         return True
+            log.info("无其它干扰,跳过动画")
+            auto.mouse_click(500, 500)
+            time.sleep(1)
+            auto.mouse_click(500, 500)
+            launch.wait_time(15)
+            if not launch.wait_until_retries(lambda: auto.click_element("./res/food_language/basics/game_close.png"), 10, 3):
+                log.error("进入游戏后-主页公告栏未找到,请检查错误截图")
+            else:
                 return True
-            time.sleep(period)
+        else:
+            log.error("没有找到游戏启动图标...请检查错误截图")
+            return False
+    else:
+        log.info("正在启动" + "1999" + "中....")
+        if auto.click_element("./res/1999/basics/startup_icon.png"):
+            time.sleep(50)
+            # log.debug("游戏第一次启动语音资源问题?")
+            # if auto.find_element("./res/1999/basics/update_1.png"):
+            #     auto.click_element("./res/1999/basics/next_button.png")
+            # log.debug("检查到更新?")
+            # if auto.find_element("./res/1999/basics/update_2.png"):
+            #     time.sleep(3)
+            #     auto.click_element("./res/1999/basics/download_button.png")
         return False
-
-    def check_and_click_enter():
-        # 点击进入
-        if auto.click_element("./res/food_language/basics/9.png"):
-            return True
-        # 游戏热更新，需要确认重启
-        # auto.click_element("./assets/images/zh_CN/base/confirm.png", "image", 0.9, take_screenshot=False)
-        # 网络异常等问题，需要重新启动
-        # auto.click_element("./assets/images/zh_CN/base/restart.png", "image", 0.9, take_screenshot=False)
-        # 适配国际服，需要点击“开始游戏”
-        # auto.click_element("./assets/images/screen/start_game.png", "image", 0.9, take_screenshot=False)
-        # 适配B服，需要点击“登录”
-        # auto.click_element("./assets/images/screen/bilibili_login.png", "image", 0.9, take_screenshot=False)
-        # 适配用户协议和隐私政策更新提示，需要点击“同意”
-        # auto.click_element("./assets/images/screen/agree_update.png", "image", 0.9, take_screenshot=False)
-        # 登录过期
-        # if auto.find_element("./assets/images/screen/account_and_password.png", "image", 0.9, take_screenshot=False):
-        #     if load_acc_and_pwd(gamereg_uid()) != (None, None):
-        #         log.info("检测到登录过期，尝试自动登录")
-        #         auto_login()
-        #     else:
-        #         raise Exception("账号登录过期")
-        return False
-
-    for retry in range(1, MAX_RETRY + 1):
-        log.info(f"进行第 {retry} 次启动游戏")
-        try:
-            if not starrail.start_game():
-                raise Exception("启动游戏失败")
-            time.sleep(10)
-
-            if not wait_until(lambda: check_and_click_enter(), 10):
-                raise TimeoutError("获取当前界面超时")
-
-            break  # 成功启动游戏，跳出重试循环
-        except Exception as e:
-            log.error(f"尝试启动游戏时发生错误：{e}")
-            if retry == MAX_RETRY:
-                raise  # 如果是最后一次尝试，则重新抛出异常

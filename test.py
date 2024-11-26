@@ -9,6 +9,9 @@ from PIL import ImageGrab
 import time
 from core.automation.screenshot import Screenshot
 from core.automation import auto
+import win32gui
+import win32api
+import win32con
 
 # 获取桌面窗口句柄
 hwndChildList = []
@@ -29,7 +32,48 @@ if target_hwnd:
     window_class = win32gui.GetClassName(target_hwnd)
     # 获取窗口的标题（已经获取过，可以直接使用）
     window_name = win32gui.GetWindowText(target_hwnd)
+    time.sleep(2)
+    screen_width = win32api.GetSystemMetrics(0)  # 屏幕宽度
+    screen_height = win32api.GetSystemMetrics(1)  # 屏幕高度
 
+    # 将坐标转换为 0 到 65535 之间的绝对坐标
+    absolute_x = int(299 * 65535 / screen_width)
+    absolute_y = int(807 * 65535 / screen_height)
+
+    # 要点击的屏幕坐标
+    x, y = 299, 807
+
+    # 获取窗口位置
+    left, top, right, bottom = win32gui.GetWindowRect(target_hwnd)
+
+    # 转换为相对于窗口客户区的坐标
+    client_x = x - left
+    client_y = y - top
+
+    # 检查客户区坐标是否在窗口范围内
+    if 0 <= client_x <= (right - left) and 0 <= client_y <= (bottom - top):
+        # 使用 MAKELONG 构建 lParam
+        lParam = win32api.MAKELONG(client_x, client_y)
+
+        # 使用窗口句柄发送点击消息
+        win32gui.SendMessage(target_hwnd, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, lParam)
+        win32gui.SendMessage(target_hwnd, win32con.WM_LBUTTONUP, None, lParam)
+    else:
+        print("坐标不在窗口范围内。")
+
+
+
+    # 使用 MAKELONG 构建 lParam
+    # lParam = win32api.MAKELONG(absolute_x, absolute_y)
+
+    # 发送鼠标按下和抬起事件
+    # win32gui.SendMessage(target_hwnd, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, lParam)
+    # win32gui.SendMessage(target_hwnd, win32con.WM_LBUTTONUP, None, lParam)
+    # win32gui.PostMessage(target_hwnd, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, lParam)
+    # time.sleep(0.05)  # 延迟 50 毫秒
+    # win32gui.PostMessage(target_hwnd, win32con.WM_LBUTTONUP, None, lParam)
+    # pyautogui.FAILSAFE = False
+    # pyautogui.click(299, 807)
     print(f"Window Handle: {target_hwnd}")
     print(f"Window Name: {window_name}")
     print(f"Window Class: {window_class}")
@@ -165,7 +209,7 @@ def terminate_named_process(target_process_name, termination_timeout=10):
 def stop_game():
     """终止游戏"""
     try:
-        # os.system(f'taskkill /f /im {self.process_name}')
+        # os.system(f'taskkill /f /im {process_name}')
         terminate_named_process("MuMuPlayer")
         print(f"游戏终止：MuMuPlayer")
         return True
@@ -173,7 +217,7 @@ def stop_game():
         print(f"终止游戏时发生错误：{e}")
         return False
 
-stop_game()
+# stop_game()
 
 
 def wait_until_retries(condition, timeout, period=1, retries=2):
@@ -224,6 +268,5 @@ def wait_until_retries(condition, timeout, period=1, retries=2):
 
 def testPin():
     print("Ok")
-    re
 
 wait_until_retries(testPin,5,5)

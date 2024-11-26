@@ -52,10 +52,10 @@ class Automation(metaclass=SingletonMeta):
         while True:
             try:
                 self.log.debug("正在捕获游戏窗口截图")
-                # result = Screenshot.take_screenshot(self.window_title)
-                result = Screenshot.take_back_screenshot(self.window_title)
+                result = Screenshot.take_screenshot(self.window_title)
+                # result = Screenshot.take_back_screenshot(self.window_title)
                 if result:
-                    self.screenshot, self.screenshot_pos, self.hwnd = result
+                    self.screenshot, self.screenshot_pos = result
                     return result
                 else:
                     self.log.error("截图失败：没有找到游戏窗口")
@@ -112,7 +112,8 @@ class Automation(metaclass=SingletonMeta):
                     else:
                         # 执行匹配模板
                         matchVal, matchLoc = ImageUtils.scale_and_match_template(screenshot, template, threshold,None)
-                    self.log.debug(f"目标图片：{target.replace('./res/', '')} 相似度：{matchVal:.2f}")
+                    if matchVal > 0 and matchLoc != (-1, -1):
+                        self.log.debug(f"目标图片：{target.replace('./res/', '')} 相似度：{matchVal:.2f}")
 
                     # # 获取模板图像的宽度和高度
                     # template_width = template.shape[1]
@@ -128,15 +129,15 @@ class Automation(metaclass=SingletonMeta):
                     # cv2.imshow('Matched Image', resized_img)
                     # cv2.waitKey(0)
                     # cv2.destroyAllWindows()
-
-                    if mask is not None:
-                        if not math.isinf(matchVal) and (threshold is None or matchVal <= threshold):
-                            top_left, bottom_right = self.calculate_center_position(template, matchLoc)
-                            return top_left, bottom_right, matchVal
-                    else:
-                        if not math.isinf(matchVal) and (threshold is None or matchVal >= threshold):
-                            top_left, bottom_right = self.calculate_center_position(template, matchLoc)
-                            return top_left, bottom_right, matchVal
+                    if matchVal > 0 and matchLoc != (-1, -1):
+                        if mask is not None:
+                            if not math.isinf(matchVal) and (threshold is None or matchVal <= threshold):
+                                top_left, bottom_right = self.calculate_center_position(template, matchLoc)
+                                return top_left, bottom_right, matchVal
+                        else:
+                            if not math.isinf(matchVal) and (threshold is None or matchVal >= threshold):
+                                top_left, bottom_right = self.calculate_center_position(template, matchLoc)
+                                return top_left, bottom_right, matchVal
                 except Exception as e:
                     self.log.debug(f"目标图片路径未找到------：{target.replace('./res/', '')}")
                     self.log.debug(f"寻找图片出错：{e}")
