@@ -1,4 +1,3 @@
-import time
 import pyautogui
 
 from core.log import Log

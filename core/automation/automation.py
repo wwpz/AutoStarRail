@@ -52,9 +52,10 @@ class Automation(metaclass=SingletonMeta):
         while True:
             try:
                 self.log.debug("正在捕获游戏窗口截图")
-                result = Screenshot.take_screenshot(self.window_title)
+                # result = Screenshot.take_screenshot(self.window_title)
+                result = Screenshot.take_back_screenshot(self.window_title)
                 if result:
-                    self.screenshot, self.screenshot_pos = result
+                    self.screenshot, self.screenshot_pos, self.hwnd = result
                     return result
                 else:
                     self.log.error("截图失败：没有找到游戏窗口")
