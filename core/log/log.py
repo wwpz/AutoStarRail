@@ -10,6 +10,7 @@ from .colorcodefilter import ColorCodeFilter
 
 
 class Log(metaclass=SingletonMeta):
+    MAX_LOG_ENTRIES = 500
     """
     日志管理类
     """
@@ -18,11 +19,17 @@ class Log(metaclass=SingletonMeta):
         self._level = level
         self._init_log()
         self._initialized = True
+        self.logs = []  # 用于存储日志消息
 
         # 在类实例化时创建时间戳目录
         self.timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         self.save_dir = f'./res/food_language/test_screenshot/{self.timestamp}'
         os.makedirs(self.save_dir, exist_ok=True)
+
+    def add_log(self, message):
+        if len(self.logs) >= self.MAX_LOG_ENTRIES:
+            self.logs.pop(0)
+        self.logs.append(message)
 
     def _init_log(self):
         """根据提供的日志级别初始化日志器及其配置。"""
@@ -44,6 +51,10 @@ class Log(metaclass=SingletonMeta):
         console_formatter = ColoredFormatter('%(asctime)s | %(levelname)s | %(message)s')
         console_handler.setFormatter(console_formatter)
         self.log.addHandler(console_handler)
+
+        # 添加自定义处理器来捕获日志消息
+        log_handler = LogHandler(self)
+        self.log.addHandler(log_handler)
 
         # 文件日志
         self._ensure_log_directory_exists()
@@ -157,3 +168,13 @@ class Log(metaclass=SingletonMeta):
             self.log_title.info(title)
         else:
             print(title)
+
+class LogHandler(logging.Handler):
+    """自定义日志处理器将日志存储在内存中."""
+    def __init__(self, log_instance):
+        super().__init__()
+        self.log_instance = log_instance
+
+    def emit(self, record):
+        msg = self.format(record)
+        self.log_instance.add_log(msg)

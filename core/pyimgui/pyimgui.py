@@ -19,7 +19,6 @@ import core.tasks.reward as reward
 game_radio1 = False
 game_radio2 = False
 game_radio3 = False
-
 visible = None
 
 
@@ -39,6 +38,7 @@ class PyImgui:
         self.impl = None
         self.hwnd = None
         self.ex_style = None
+        self.new_font = None
 
     def init_glfw(self):
         """初始化 GLFW 并创建窗口"""
@@ -70,6 +70,12 @@ class PyImgui:
         """初始化 ImGui 并设置窗口句柄和扩展样式"""
         imgui.create_context()
         self.impl = GlfwRenderer(self.window)
+
+        io = imgui.get_io()
+        self.new_font = io.fonts.add_font_from_file_ttf(
+            "./res/ttf/simhei.ttf", 14, glyph_ranges=io.fonts.get_glyph_ranges_chinese_full()
+        )
+        self.impl.refresh_font_texture()
 
         # 获取窗口句柄
         self.hwnd = glfw.get_win32_window(self.window)
@@ -106,48 +112,61 @@ class PyImgui:
 
         # imgui.begin("Menu")
         if imgui.begin_tab_bar("TabBar"):
-            if imgui.begin_tab_item("Game-options").selected:
-                changed1, game_radio1 = imgui.checkbox("1999", game_radio1)
-                changed2, game_radio2 = imgui.checkbox("Food Language", game_radio2)
-                changed3, game_radio3 = imgui.checkbox("Honkai: Star Rail", game_radio3)
-                if changed1:
-                    cfg.set_value("1999-button",game_radio1)
-                if changed2:
-                    cfg.set_value("food_language-button", game_radio2)
-                if changed3:
-                    cfg.set_value("Honkai: Star Rail", game_radio3)
-                imgui.end_tab_item()
-
-            if game_radio1:
-                if imgui.begin_tab_item("1999-options").selected:
-                    imgui.text("1999-button...")
+            with imgui.font(self.new_font):
+                if imgui.begin_tab_item("Game-options").selected:
+                    changed1, game_radio1 = imgui.checkbox("1999", game_radio1)
+                    changed2, game_radio2 = imgui.checkbox("Food Language", game_radio2)
+                    changed3, game_radio3 = imgui.checkbox("Honkai: Star Rail", game_radio3)
+                    if changed1:
+                        cfg.set_value("1999-button",game_radio1)
+                    if changed2:
+                        cfg.set_value("food_language-button", game_radio2)
+                    if changed3:
+                        cfg.set_value("Honkai: Star Rail", game_radio3)
+                    if imgui.button("Start"):
+                        # 创建线程
+                        thread = threading.Thread(target=run_reward)
+                        thread.start()
                     imgui.end_tab_item()
-            if game_radio2:
-                if imgui.begin_tab_item("Food Language-options").selected:
-                    expanded, visible = imgui.collapsing_header("Expand me!", None)
-                    if expanded:
-                        imgui.button("Now you see me!")
-                        imgui.button("Now you see me!")
-                        imgui.button("Now you see me!")
-                        imgui.button("Now you see me!")
-                        imgui.button("Now you see me!")
+
+                if imgui.begin_tab_item("日志").selected:
+                    if imgui.button("测试"):
+                        self.log.debug("为了确保所有文本都使用加载的字体，你可以在每个需要显示中文的区域使用 with imgui.font(new_font):。例如：为了确保所有文本都使用加载的字体，你可以在每个需要显示中文的区域使用 with imgui.font(new_font):。例如：为了确保所有文本都使用加载的字体，你可以在每个需要显示中文的区域使用 with imgui.font(new_font):。例如：为了确保所有文本都使用加载的字体，你可以在每个需要显示中文的区域使用 with imgui.font(new_font):。例如：")
+                    with imgui.begin_child("region", -1, -50, border=True):
+                        for log_message in self.log.logs:
+                            imgui.text_wrapped(log_message)
+                        # 自动滚动到最底部
+                        imgui.set_scroll_here_y(1.0)
                     imgui.end_tab_item()
-            if game_radio3:
-                with imgui.begin_tab_item("Honkai: Star Rail-options", opened=game_radio3) as item3:
-                    game_radio3 = item3.opened
-                    if item3.selected:
-                        imgui.text("Honkai: Star Rail-button...")
+                if game_radio1:
+                    if imgui.begin_tab_item("1999-options").selected:
+                        imgui.text("1999-button...")
+                        imgui.end_tab_item()
+                if game_radio2:
+                    if imgui.begin_tab_item("Food Language-options").selected:
+                        expanded, visible = imgui.collapsing_header("Expand me!", None)
+                        if expanded:
+                            imgui.button("Now you see me!")
+                            imgui.button("Now you see me!")
+                            imgui.button("Now you see me!")
+                            imgui.button("Now you see me!")
+                            imgui.button("Now you see me!")
+                        imgui.end_tab_item()
+                if game_radio3:
+                    with imgui.begin_tab_item("Honkai: Star Rail-options", opened=game_radio3) as item3:
+                        game_radio3 = item3.opened
+                        if item3.selected:
+                            imgui.text("Honkai: Star Rail-button...")
 
-
-            imgui.end_tab_bar()
+                imgui.end_tab_bar()
 
         # 检查鼠标是否在 ImGui 窗口内
         # is_hovering = self.is_mouse_hovering()
 
-        if imgui.button("Start"):
-            # 创建线程
-            thread = threading.Thread(target=run_reward)
-            thread.start()
+        # if imgui.button("Start"):
+        #     # 创建线程
+        #     thread = threading.Thread(target=run_reward)
+        #     thread.start()
         # imgui.same_line()
         # if imgui.button("Exit"):
         #     glfw.set_window_should_close(self.window, True)
