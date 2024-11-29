@@ -71,15 +71,6 @@ class GameUtil:
             self.log_debug("游戏窗口未找到")
             return None
 
-    def wait_time(self, timeout, print_interval=5):
-        """等待指定时间，并每隔 print_interval 秒打印剩余时间。"""
-        end_time = time.time() + timeout
-        while time.time() < end_time:
-            remaining_time = int(end_time - time.time())  # 更新剩余时间
-            if remaining_time % print_interval == 0:
-                self.log_debug(f"剩余等待时间: {remaining_time} seconds")
-            time.sleep(1)  # 添加一个延迟，以避免快速循环
-
     def wait_until(condition, timeout, period=1):
         """等待直到条件满足或超时"""
         end_time = time.time() + timeout
@@ -240,7 +231,8 @@ class GameUtil:
             if ctypes.windll.user32.SetForegroundWindow(hwnd) == 0:
                 raise Exception("设置窗口前景失败")
 
-    def shutdown(self, action: Literal['Exit', 'Loop', 'Shutdown', 'Sleep', 'Hibernate', 'Restart', 'Logoff'], delay: int = 60) -> bool:
+    def shutdown(self, action: Literal['Exit', 'Loop', 'Shutdown', 'Sleep', 'Hibernate', 'Restart', 'Logoff'],
+                 delay: int = 60) -> bool:
         """
         终止游戏并在指定的延迟后执行系统操作：关机、睡眠、休眠、重启、注销。
 

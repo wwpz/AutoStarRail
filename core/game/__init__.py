@@ -1,19 +1,19 @@
-import time
 from core.config import cfg
 from core.log import log
 from core.launcher import GameLauncher
 from core.automation import auto
+from utils.timeUtil import TimeUtil
 
 launch = GameLauncher(cfg.game_path, cfg.game_process_name, cfg.game_type, cfg.window_name, cfg.window_class, log)
 game_state = True
 
 def start():
-    log.hr("开始运行", 0)
+    log.hr("开始运行启动游戏", 0)
     if launch.game_type in ["food_language", "1999"]:
         return start_simulator_game()
     else:
         print("星铁")
-    log.hr("完成", 2)
+    log.hr("完成启动游戏", 2)
 
 
 def start_simulator_game():
@@ -21,7 +21,7 @@ def start_simulator_game():
         # 点击启动游戏
         log.info("正在启动" + "食物语" + "中....")
         if auto.click_element("./res/food_language/basics/startup_icon.png"):
-            launch.wait_time(40)
+            TimeUtil.wait_time(40)
             # 在正常情况下,点击游戏进入会直接有修复和资源加载的字样,通过判断则知道是否进入游戏,否则进行其它判断
             # 游戏启动动画问题?是在检测到进入游戏后的x秒后点击画面两次跳过？还是进行12+ 图片判断点击？
             # 适配用户协议和隐私政策更新提示，需要点击“接受”
@@ -37,7 +37,7 @@ def start_simulator_game():
             #         return True
             log.info("无其它干扰,跳过动画")
             auto.mouse_click(500, 500)
-            time.sleep(1)
+            TimeUtil.wait_time(1)
             auto.mouse_click(500, 500)
             launch.wait_time(15)
             if not launch.wait_until_retries(lambda: auto.click_element("./res/food_language/basics/game_close.png"), 10, 3):
@@ -50,7 +50,7 @@ def start_simulator_game():
     else:
         log.info("正在启动" + "1999" + "中....")
         if auto.click_element("./res/1999/basics/startup_icon.png"):
-            time.sleep(50)
+            TimeUtil.wait_time(50)
             # log.debug("游戏第一次启动语音资源问题?")
             # if auto.find_element("./res/1999/basics/update_1.png"):
             #     auto.click_element("./res/1999/basics/next_button.png")

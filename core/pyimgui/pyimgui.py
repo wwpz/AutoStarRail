@@ -1,6 +1,5 @@
 import sys
 import glfw
-import time
 import imgui
 import threading
 from OpenGL.GL import *
@@ -8,6 +7,7 @@ from core.log import Log
 from ctypes import windll
 from typing import Optional
 from core.config import cfg
+from utils.timeUtil import TimeUtil
 from imgui.integrations.glfw import GlfwRenderer
 
 import core.game as game
@@ -25,9 +25,8 @@ visible = None
 def run_reward():
     if launcher.start():
         if game.start():
-            time.sleep(5)
             login.start()
-            time.sleep(5)
+            TimeUtil.wait_time(5)
             reward.start()
 
 

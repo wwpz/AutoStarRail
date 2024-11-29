@@ -4,17 +4,18 @@ from core.config import cfg
 from core.log import log
 from .game_launcher import GameLauncher
 from core.automation import auto
+from utils.timeUtil import TimeUtil
 
 launch = GameLauncher(cfg.game_path, cfg.game_process_name, cfg.game_type, cfg.window_name, cfg.window_class, log)
 
 
 def start():
-    log.hr("开始运行", 0)
+    log.hr("开始运行启动模拟器", 0)
     if launch.game_type in ["food_language", "1999"]:
         return launch_simulator_start()
     else:
         print("ok")
-    log.hr("完成", 2)
+    log.hr("启动模拟器完成", 2)
 
 
 def launch_simulator_start():
@@ -29,7 +30,7 @@ def launch_simulator_start():
             else:
                 if not launch.start_game():
                     raise Exception("通过路径启动模拟器失败")
-            launch.wait_time(40)
+            TimeUtil.wait_time(40)
             if check_simulator_init():
                 return True
         except Exception as e:
@@ -47,7 +48,7 @@ def launch_start():
             if not launch.switch_to_game():
                 if not launch.start_game():
                     raise Exception("通过路径启动模拟器失败")
-                time.sleep(40)
+                TimeUtil.wait_time(40)
             # 检查是否进入模拟器主界面、是否有干扰
             if launch.game_type in ["food_language", "1999"]:
                 check_simulator_init()
