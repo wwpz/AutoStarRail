@@ -2,7 +2,7 @@ import time
 from core.config import cfg
 from core.log import log
 from core.automation import auto
-from utils.timeUtil import TimeUtil
+from utils.time_utils import TimeUtil
 
 
 def start():

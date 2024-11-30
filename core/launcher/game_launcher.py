@@ -2,7 +2,7 @@ import pyautogui
 
 from core.log import Log
 from typing import Optional
-from utils.gameUtil import GameUtil
+from utils.game_utils import GameUtil
 
 
 class GameLauncher(GameUtil):

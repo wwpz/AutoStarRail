@@ -1,5 +1,8 @@
 import sys
+import json
 import time
+from typing import Optional
+from core.log.log import Log
 from ruamel.yaml import YAML
 from utils.singleton import SingletonMeta
 
@@ -9,12 +12,13 @@ class Config(metaclass=SingletonMeta):
     配置管理类，用于加载、更新和保存配置信息
     """
 
-    def __init__(self, version_path, example_path, config_path):
+    def __init__(self, version_path, example_path, config_path, log: Optional[Log] = None):
         self.yaml = YAML()
         self.version = self._load_version(version_path)
         self.config = self._load_default_config(example_path)
         self.config_path = config_path
         self._load_config()
+        self.log = log
 
     def _load_version(self, version_path):
         """加载版本信息"""
@@ -73,6 +77,18 @@ class Config(metaclass=SingletonMeta):
     def save_timestamp(self, key):
         """保存当前时间戳到指定的配置项"""
         self.set_value(key, time.time())
+
+    def load_value_from_json(self, file_path, key):
+        try:
+            # 打开并读取 JSON 文件
+            with open(file_path, 'r', encoding='utf-8') as file:
+                data = json.load(file)
+
+            # 获取指定键的值
+            return data.get(key, None)
+        except (FileNotFoundError, TypeError) as e:
+            self.log.debug(f"Error accessing JSON data: {e}")
+            return None
 
     def __getattr__(self, attr):
         """允许通过属性访问配置项的值"""

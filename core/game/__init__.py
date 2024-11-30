@@ -2,7 +2,7 @@ from core.config import cfg
 from core.log import log
 from core.launcher import GameLauncher
 from core.automation import auto
-from utils.timeUtil import TimeUtil
+from utils.time_utils import TimeUtil
 
 launch = GameLauncher(cfg.game_path, cfg.game_process_name, cfg.game_type, cfg.window_name, cfg.window_class, log)
 game_state = True
@@ -39,7 +39,7 @@ def start_simulator_game():
             auto.mouse_click(500, 500)
             TimeUtil.wait_time(1)
             auto.mouse_click(500, 500)
-            launch.wait_time(15)
+            TimeUtil.wait_time(15)
             if not launch.wait_until_retries(lambda: auto.click_element("./res/food_language/basics/game_close.png"), 10, 3):
                 log.error("进入游戏后-主页公告栏未找到,请检查错误截图")
             else:

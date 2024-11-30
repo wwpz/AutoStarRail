@@ -7,7 +7,7 @@ from core.log import Log
 from ctypes import windll
 from typing import Optional
 from core.config import cfg
-from utils.timeUtil import TimeUtil
+from utils.time_utils import TimeUtil
 from imgui.integrations.glfw import GlfwRenderer
 
 import core.game as game
@@ -56,7 +56,7 @@ class PyImgui:
         # width, height = mode.size.width, mode.size.height
 
         # 创建窗口
-        self.window = glfw.create_window(300, 200, "ImGui Transparent Overlay", None, None)
+        self.window = glfw.create_window(500, 200, "ImGui Transparent Overlay", None, None)
         if not self.window:
             glfw.terminate()
             print("Could not initialize Window")

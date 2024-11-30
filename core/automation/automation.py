@@ -6,6 +6,7 @@ import numpy as np
 
 from .input import Input
 from typing import Optional
+from core.config import cfg
 from core.log.log import Log
 from datetime import datetime
 from .screenshot import Screenshot
@@ -82,7 +83,8 @@ class Automation(metaclass=SingletonMeta):
 
     def find_element(self, target, threshold=0.9, max_retries=2, take_screenshot=True):
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        self.log.debug(f"本次查找的图片路径为------：{target.replace('./res/', '')}")
+        now_image_name = target.replace('./res/', '')
+        self.log.debug(f"本次查找的图片路径为------：" + now_image_name)
         max_retries = 1 if not take_screenshot else max_retries
         for i in range(max_retries):
             if take_screenshot:
@@ -104,6 +106,17 @@ class Automation(metaclass=SingletonMeta):
                     base_name = target.replace("./res/", "").split('/')[0]
                     # 构建保存路径，包括基于时间戳的文件夹和文件名
                     save_path = os.path.join(self.log.save_dir, f'{base_name}_{timestamp}.jpg')
+
+                    # 使用 rsplit 从右边分割字符串，最多分割一次
+                    file_name_with_extension = now_image_name.rsplit('/', 1)[-1]
+                    # 使用 rsplit 从右边分割字符串，去掉扩展名
+                    file_name = file_name_with_extension.rsplit('.', 1)[0]
+                    load_reward_name = cfg.load_value_from_json("./config/reward_screenshot.json", file_name)
+                    if file_name == load_reward_name:
+                        # 保存领取成功后的截图
+                        self.log.debug(f"本次保存的奖励图片为------：" + file_name)
+                        os.makedirs(f'./res/reward_images/{timestamp}', exist_ok=True)
+                        cv2.imwrite(os.path.join(f'./res/reward_images/{timestamp}', f'{file_name}_{timestamp}.jpg'), screenshot)
                     # 使用 OpenCV 保存图像
                     cv2.imwrite(save_path, screenshot)
                     if mask is not None:
