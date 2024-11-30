@@ -82,6 +82,12 @@ class Log(metaclass=SingletonMeta):
         file_handler.setFormatter(file_formatter)
         self.log_title.addHandler(file_handler)
 
+        # pyimgui日志
+        log_handler = LogHandler(self)
+        console_formatter = logging.Formatter('%(message)s')
+        console_handler.setFormatter(console_formatter)
+        self.log_title.addHandler(log_handler)
+
     def _ensure_log_directory_exists(self):
         """确保日志目录存在，不存在则创建."""
         if not os.path.exists("logs"):
@@ -129,7 +135,7 @@ class Log(metaclass=SingletonMeta):
         ------- 这是一个标题 -------     
         """
         try:
-            separator_length = 115
+            separator_length = 62
             title_lines = title.split('\n')
             separator = '+' + '-' * separator_length + '+'
             title_length = self._custom_len(title)
