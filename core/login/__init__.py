@@ -11,7 +11,7 @@ def start():
         login_simulator_game()
     else:
         print("星铁")
-    log.hr("完成登录账号", 2)
+    log.hr("完成登录账号", 0)
 
 
 def login_simulator_game():
@@ -39,3 +39,4 @@ def login_simulator_game():
                 log.info("登录成功...")
         else:
             print("手动登录账号（暂时不确定）")
+log.info("登录启动流程完成")

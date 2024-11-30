@@ -1,5 +1,6 @@
 from .mail import Mail
 from .signin import Signin
+from .activity import Activity
 from core.log import log
 from core.config import cfg
 from core.automation import auto
@@ -10,15 +11,18 @@ class Reward:
         self.game_type = cfg.game_type
         self.mail = Mail("邮件", "true")
         self.signin = Signin("签到", "true")
+        self.activity = Activity("活动", "true")
 
         self.reward_instances = {
             "mail": self.mail,
             "signin": self.signin,
+            "activity": self.activity,
         }
 
         self.reward_food_language_mapping = {
             "mail": "./res/food_language/reward/email/game_email.png",
-            "signin": "./res/food_language/reward/signin/game_signin.png"
+            "signin": "./res/food_language/reward/signin/game_signin.png",
+            "activity": "./res/food_language/reward/activity/game_activity.png"
         }
 
         self.reward_1999_mapping = {
@@ -36,6 +40,7 @@ class Reward:
                 else:
                     reward_name = self._get_reward_name(reward_type)
                     log.info(f"未检测到{reward_name}奖励")
+                    log.hr(f"未检测到{reward_name}奖励", 0)
         elif self.game_type == "food_language":
             for reward_type, (image_path) in self.reward_food_language_mapping.items():
                 if self._find_reward(image_path):
@@ -43,7 +48,8 @@ class Reward:
                 else:
                     reward_name = self._get_reward_name(reward_type)
                     log.info(f"未检测到{reward_name}奖励")
-        log.hr("完成", 2)
+                    log.hr(f"未检测到{reward_name}奖励", 0)
+        log.hr("完成领取奖励", 0)
 
     def check_and_collect_specific_reward(self, reward_type):
         reward_name = self._get_reward_name(reward_type)

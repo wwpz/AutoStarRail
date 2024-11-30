@@ -15,7 +15,7 @@ def start():
         return launch_simulator_start()
     else:
         print("ok")
-    log.hr("启动模拟器完成", 2)
+    log.hr("启动模拟器完成", 0)
 
 
 def launch_simulator_start():
@@ -37,6 +37,7 @@ def launch_simulator_start():
             log.error(f"尝试启动模拟器时发生错误：{e}")
             if retry == MAX_RETRY:
                 return False
+log.info("模拟器启动流程完成")
 
 
 def launch_start():
