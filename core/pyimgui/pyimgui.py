@@ -25,9 +25,9 @@ visible = None
 def run_reward():
     if launcher.start():
         if game.start():
-            login.start()
-            TimeUtil.wait_time(5)
-            reward.start()
+            if login.start():
+                TimeUtil.wait_time(5)
+                reward.start()
 
 
 class PyImgui:
