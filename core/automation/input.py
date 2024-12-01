@@ -57,6 +57,22 @@ class Input:
         except Exception as e:
             self.logger.error(f"键盘按下 {key} 出错：{e}")
 
+    def press_keys(self, keys, wait_time=0.2):
+        '''模拟键盘按键，可以指定按下的时间。如果是组合键，keys 应该是一个列表或元组。'''
+        try:
+            if isinstance(keys, (list, tuple)):
+                # 使用 hotkey 方法同时按下和释放多个键
+                pyautogui.hotkey(*keys)
+                self.logger.debug(f"组合键按下 {'+'.join(keys)}")
+            else:
+                # 单个按键的情况
+                pyautogui.keyDown(keys)
+                time.sleep(wait_time)  # 等待指定的时间
+                pyautogui.keyUp(keys)
+                self.logger.debug(f"键盘按下 {keys}")
+        except Exception as e:
+            self.logger.error(f"键盘按下 {keys} 出错：{e}")
+
     def secretly_press_key(self, key, wait_time=0.2):
         '''(不输出具体键位)模拟键盘按键，可以指定按下的时间'''
         try:

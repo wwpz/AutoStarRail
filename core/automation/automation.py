@@ -43,6 +43,7 @@ class Automation(metaclass=SingletonMeta):
         self.press_key = self.input_handler.press_key
         self.secretly_press_key = self.input_handler.secretly_press_key
         self.press_mouse = self.input_handler.press_mouse
+        self.press_keys = self.input_handler.press_keys
 
     def take_screenshot(self):
         """
@@ -115,8 +116,7 @@ class Automation(metaclass=SingletonMeta):
                     if file_name == load_reward_name:
                         # 保存领取成功后的截图
                         self.log.debug(f"本次保存的奖励图片为------：" + file_name)
-                        os.makedirs(f'./res/reward_images/{timestamp}', exist_ok=True)
-                        cv2.imwrite(os.path.join(f'./res/reward_images/{timestamp}', f'{file_name}_{timestamp}.jpg'), screenshot)
+                        cv2.imwrite(os.path.join(f'./res/reward_images/{cfg.game_type}/{cfg.user_account}', f'{file_name}_{timestamp}.jpg'), screenshot)
                     # 使用 OpenCV 保存图像
                     cv2.imwrite(save_path, screenshot)
                     if mask is not None:

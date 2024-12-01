@@ -1,3 +1,4 @@
+import os
 from core.config import cfg
 from core.log import log
 from core.launcher import GameLauncher
@@ -11,6 +12,7 @@ game_state = True
 def start():
     log.hr("开始运行启动游戏", 0)
     if launch.game_type in ["food_language", "1999"]:
+        os.makedirs(f'./res/reward_images/{cfg.game_type}/{cfg.user_account}', exist_ok=True)
         return start_simulator_game()
     else:
         print("星铁")
@@ -33,12 +35,12 @@ def start_simulator_game():
                 TimeUtil.wait_time(25)
                 log.debug("游戏是否有热更新?")
                 # 判断是否游戏热更新，需要确认重启
-                auto.click_element("./res/food_language/basics/confirm.png")
-                if launch.wait_until_retries(
-                        lambda: auto.click_element("./res/food_language/basics/confirm_update.png"),
-                        300, 3):
-                    log.info("游戏更新成功,点击确认重启游戏中...")
-                    TimeUtil.wait_time(40)
+                if auto.click_element("./res/food_language/basics/confirm.png"):
+                    if launch.wait_until_retries(
+                            lambda: auto.click_element("./res/food_language/basics/confirm_update.png"),
+                            300, 3):
+                        log.info("游戏更新成功,点击确认重启游戏中...")
+                        TimeUtil.wait_time(40)
                 log.info("无其它干扰,跳过动画")
                 auto.mouse_click(500, 500)
                 TimeUtil.wait_time(1)
@@ -69,4 +71,3 @@ def start_simulator_game():
         # 如果for循环中没有break，意味着所有重试都失败，可以在这处理
         log.info("所有重试均未成功")
         return False
-log.info("游戏启动流程完成")

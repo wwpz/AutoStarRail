@@ -4,6 +4,7 @@ import imgui
 import threading
 from OpenGL.GL import *
 from core.log import Log
+from core.log import log
 from ctypes import windll
 from typing import Optional
 from core.config import cfg
@@ -24,9 +25,12 @@ visible = None
 
 def run_reward():
     if launcher.start():
+        log.info("模拟器启动流程完成")
         if game.start():
+            log.info("游戏启动流程完成")
             if login.start():
-                TimeUtil.wait_time(5)
+                log.info("登录启动流程完成")
+                TimeUtil.wait_time(10)
                 reward.start()
 
 
@@ -112,20 +116,16 @@ class PyImgui:
         # imgui.begin("Menu")
         if imgui.begin_tab_bar("TabBar"):
             with imgui.font(self.new_font):
-                if imgui.begin_tab_item("Game-options").selected:
-                    changed1, game_radio1 = imgui.checkbox("1999", game_radio1)
-                    changed2, game_radio2 = imgui.checkbox("Food Language", game_radio2)
-                    changed3, game_radio3 = imgui.checkbox("Honkai: Star Rail", game_radio3)
+                if imgui.begin_tab_item("游戏选项").selected:
+                    changed1, game_radio1 = imgui.checkbox("重返未来:1999", game_radio1)
+                    changed2, game_radio2 = imgui.checkbox("食物语", game_radio2)
+                    changed3, game_radio3 = imgui.checkbox("崩坏:星穹铁道", game_radio3)
                     if changed1:
                         cfg.set_value("1999-button",game_radio1)
                     if changed2:
                         cfg.set_value("food_language-button", game_radio2)
                     if changed3:
                         cfg.set_value("Honkai: Star Rail", game_radio3)
-                    if imgui.button("Start"):
-                        # 创建线程
-                        thread = threading.Thread(target=run_reward)
-                        thread.start()
                     imgui.end_tab_item()
 
                 if imgui.begin_tab_item("日志").selected:
@@ -138,11 +138,11 @@ class PyImgui:
                         imgui.set_scroll_here_y(1.0)
                     imgui.end_tab_item()
                 if game_radio1:
-                    if imgui.begin_tab_item("1999-options").selected:
+                    if imgui.begin_tab_item("重返未来:1999").selected:
                         imgui.text("1999-button...")
                         imgui.end_tab_item()
                 if game_radio2:
-                    if imgui.begin_tab_item("Food Language-options").selected:
+                    if imgui.begin_tab_item("食物语").selected:
                         expanded, visible = imgui.collapsing_header("Expand me!", None)
                         if expanded:
                             imgui.button("Now you see me!")
@@ -152,7 +152,7 @@ class PyImgui:
                             imgui.button("Now you see me!")
                         imgui.end_tab_item()
                 if game_radio3:
-                    with imgui.begin_tab_item("Honkai: Star Rail-options", opened=game_radio3) as item3:
+                    with imgui.begin_tab_item("崩坏:星穹铁道", opened=game_radio3) as item3:
                         game_radio3 = item3.opened
                         if item3.selected:
                             imgui.text("Honkai: Star Rail-button...")
@@ -162,10 +162,10 @@ class PyImgui:
         # 检查鼠标是否在 ImGui 窗口内
         # is_hovering = self.is_mouse_hovering()
 
-        # if imgui.button("Start"):
-        #     # 创建线程
-        #     thread = threading.Thread(target=run_reward)
-        #     thread.start()
+        if imgui.button("Start"):
+            # 创建线程
+            thread = threading.Thread(target=run_reward)
+            thread.start()
         # imgui.same_line()
         # if imgui.button("Exit"):
         #     glfw.set_window_should_close(self.window, True)

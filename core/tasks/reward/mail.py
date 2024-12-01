@@ -13,7 +13,10 @@ class Mail(Template):
         elif self.game_type == "food_language":
             time.sleep(5)
             if auto.click_element("./res/food_language/reward/email/game_email.png"):
+                time.sleep(3)
                 if auto.click_element("./res/food_language/reward/email/game_email_receive_reward.png"):
+                    time.sleep(3)
                     if auto.click_element("./res/food_language/basics/game_blank_close.png"):
                         time.sleep(3)
                         auto.click_element("./res/food_language/basics/game_close.png")
+                        time.sleep(3)
