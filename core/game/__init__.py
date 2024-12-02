@@ -1,9 +1,10 @@
 import os
-from core.config import cfg
 from core.log import log
-from core.launcher import GameLauncher
+from core.config import cfg
+from datetime import datetime
 from core.automation import auto
 from utils.time_utils import TimeUtil
+from core.launcher import GameLauncher
 
 launch = GameLauncher(cfg.game_path, cfg.game_process_name, cfg.game_type, cfg.window_name, cfg.window_class, log)
 game_state = True
@@ -12,7 +13,8 @@ game_state = True
 def start():
     log.hr("开始运行启动游戏", 0)
     if launch.game_type in ["food_language", "1999"]:
-        os.makedirs(f'./res/reward_images/{cfg.game_type}/{cfg.user_account}', exist_ok=True)
+        today_date = datetime.now().strftime('%Y_%m_%d')
+        os.makedirs(f'./res/reward_images/{cfg.game_type}/{cfg.user_account}/{today_date}', exist_ok=True)
         return start_simulator_game()
     else:
         print("星铁")
@@ -26,7 +28,7 @@ def start_simulator_game():
         if launch.game_type == "food_language":
             # 点击启动游戏
             log.info("正在启动" + "食物语" + "中....")
-            if auto.click_element("./res/food_language/basics/startup_icon_1.png"):
+            if auto.click_element("./res/food_language/basics/startup_icon.png"):
                 TimeUtil.wait_time(15)
                 # 适配用户协议和隐私政策更新提示，需要点击“接受”
                 log.debug("是否需要同意游戏隐私政策?")
@@ -54,7 +56,6 @@ def start_simulator_game():
                     return True
             else:
                 log.error("没有找到游戏启动图标...请检查错误截图")
-                return False
         else:
             log.info("正在启动" + "1999" + "中....")
             if auto.click_element("./res/1999/basics/startup_icon.png"):

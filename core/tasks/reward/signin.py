@@ -15,6 +15,6 @@ class Signin(Template):
                     time.sleep(3)
                     if auto.click_element("./res/food_language/reward/signin/game_signin_more.png"):
                         time.sleep(3)
-                        auto.click_element("./res/food_language/reward/signin/game_signin_month.png")
+                        auto.find_element("./res/food_language/reward/signin/game_signin_month.png", is_save=True, screenshot_module="signin")
                     auto.mouse_click(100, 100)
                     time.sleep(3)

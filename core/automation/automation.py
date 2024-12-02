@@ -82,8 +82,9 @@ class Automation(metaclass=SingletonMeta):
         center_y = max_loc[1] + height // 2
         return center_x, center_y
 
-    def find_element(self, target, threshold=0.9, max_retries=2, take_screenshot=True):
+    def find_element(self, target, threshold=0.9, max_retries=2, take_screenshot=True, is_save=False, screenshot_module=None):
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        today_date = datetime.now().strftime('%Y_%m_%d')
         now_image_name = target.replace('./res/', '')
         self.log.debug(f"本次查找的图片路径为------：" + now_image_name)
         max_retries = 1 if not take_screenshot else max_retries
@@ -108,23 +109,19 @@ class Automation(metaclass=SingletonMeta):
                     # 构建保存路径，包括基于时间戳的文件夹和文件名
                     save_path = os.path.join(self.log.save_dir, f'{base_name}_{timestamp}.jpg')
 
-                    # 使用 rsplit 从右边分割字符串，最多分割一次
-                    file_name_with_extension = now_image_name.rsplit('/', 1)[-1]
-                    # 使用 rsplit 从右边分割字符串，去掉扩展名
-                    file_name = file_name_with_extension.rsplit('.', 1)[0]
-                    load_reward_name = cfg.load_value_from_json("./config/reward_screenshot.json", file_name)
-                    if file_name == load_reward_name:
+                    if is_save:
                         # 保存领取成功后的截图
-                        self.log.debug(f"本次保存的奖励图片为------：" + file_name)
-                        cv2.imwrite(os.path.join(f'./res/reward_images/{cfg.game_type}/{cfg.user_account}', f'{file_name}_{timestamp}.jpg'), screenshot)
+                        self.log.debug(f"本次保存的奖励图片为------：" + screenshot_module)
+                        cv2.imwrite(os.path.join(f'./res/reward_images/{cfg.game_type}/{cfg.user_account}/{today_date}',
+                                                 f'{screenshot_module}_{timestamp}.jpg'), screenshot)
                     # 使用 OpenCV 保存图像
                     cv2.imwrite(save_path, screenshot)
                     if mask is not None:
                         # 执行匹配模板
-                        matchVal, matchLoc = ImageUtils.scale_and_match_template(screenshot, template, threshold,mask)
+                        matchVal, matchLoc = ImageUtils.scale_and_match_template(screenshot, template, threshold, mask)
                     else:
                         # 执行匹配模板
-                        matchVal, matchLoc = ImageUtils.scale_and_match_template(screenshot, template, threshold,None)
+                        matchVal, matchLoc = ImageUtils.scale_and_match_template(screenshot, template, threshold, None)
                     if matchVal > 0 and matchLoc != (-1, -1):
                         self.log.debug(f"目标图片：{target.replace('./res/', '')} 相似度：{matchVal:.2f}")
 
@@ -184,7 +181,7 @@ class Automation(metaclass=SingletonMeta):
 
         return True
 
-    def click_element(self, target, threshold=0.9, max_retries=2, action="click"):
+    def click_element(self, target, threshold=0.9, max_retries=2, action="click", is_save=False, screenshot_module=None):
         """
         查找并点击屏幕上的元素。
 
@@ -193,11 +190,13 @@ class Automation(metaclass=SingletonMeta):
         :param threshold: 查找阈值，用于图像查找时的相似度匹配。
         :param max_retries: 最大重试次数。
         :param action: 执行的动作。
+        :param is_save: 是否保存当前截图。
+        :param screenshot_module: 保存的图片模块。
 
         返回:
         如果找到元素并点击成功，则返回True；否则返回False。
         """
-        coordinates = self.find_element(target, threshold, max_retries)
+        coordinates = self.find_element(target, threshold, max_retries, is_save=is_save, screenshot_module=screenshot_module)
         if coordinates:
             return self.click_element_with_pos(coordinates, action)
         return False
