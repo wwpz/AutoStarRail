@@ -24,7 +24,8 @@ ui_state = {
     "mail_state": False,
     "signin_state": False,
     "activity_state": False,
-    "show_second_window": False
+    "show_second_window": False,
+    "input_buffer":"请输入账号...."
 }
 
 def run_reward():
@@ -166,20 +167,25 @@ class PyImgui:
                                 imgui.set_next_window_position(0, 0)
                                 imgui.set_next_window_size(width, height)
                                 # 开始一个新的窗口
-                                with imgui.begin("Example: empty window",closable=True):
-                                    pass
+                                with imgui.begin("添加账号",closable=True, flags=imgui.WINDOW_NO_RESIZE | imgui.WINDOW_NO_COLLAPSE | imgui.WINDOW_ALWAYS_USE_WINDOW_PADDING) as window:
+                                    imgui.text("账号：")
+                                    # 创建一个输入框
+                                    changed, input_buffer = imgui.input_text("Input", ui_state["input_buffer"], 256,)
+                                    if changed:
+                                        # 当用户输入发生变化时，处理输入的变化
+                                        print("Current input:", input_buffer)
 
-                                # opened, _ = imgui.begin("ssss",closable=True, flags=imgui.WINDOW_NO_RESIZE | imgui.WINDOW_NO_COLLAPSE | imgui.WINDOW_ALWAYS_USE_WINDOW_PADDING)
-                                #
-                                # # 在窗口中显示一些文本
-                                # imgui.text("这是第二个窗口的内容")
-                                # # 结束第二个窗口
-                                # imgui.end()
-                                # # 如果窗口被关闭，通过关闭按钮或其他方式就会更新窗口状态
-                                #
-                                # print(opened)
-                                # if not opened:
-                                #     ui_state["show_second_window"] = False
+                                    imgui.dummy(0, 50)
+                                    imgui.text("密码：")
+                                    # 创建密码输入框
+                                    changed, password_buffer = imgui.input_text(
+                                        "Password", "password_buffer", 256, imgui.INPUT_TEXT_PASSWORD
+                                    )
+                                    if changed:
+                                        # 当用户输入发生变化时，处理输入的变化
+                                        print("Current input:", password_buffer)
+                                    if not window.opened:
+                                        ui_state["show_second_window"] = False
                         imgui.end_tab_item()
                 if ui_state["game_radio3"]:
                     with imgui.begin_tab_item("崩坏:星穹铁道", opened=ui_state["game_radio3"]) as item3:
