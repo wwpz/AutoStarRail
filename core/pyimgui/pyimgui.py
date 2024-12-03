@@ -16,12 +16,16 @@ import core.login as login
 import core.launcher as launcher
 import core.tasks.reward as reward
 
-#
-game_radio1 = False
-game_radio2 = False
-game_radio3 = False
-visible = None
-
+ui_state = {
+    "game_radio1": False,
+    "game_radio2": False,
+    "game_radio3": False,
+    "visible": False,
+    "mail_state": False,
+    "signin_state": False,
+    "activity_state": False,
+    "show_second_window": False
+}
 
 def run_reward():
     if launcher.start():
@@ -99,7 +103,7 @@ class PyImgui:
         return self.window
 
     def render_ui(self):
-        global game_radio1, game_radio2, game_radio3, visible
+        global ui_state
         """渲染用户界面"""
         glfw.poll_events()
         self.impl.process_inputs()
@@ -113,21 +117,13 @@ class PyImgui:
         imgui.set_next_window_size(width, height)
         imgui.begin("Menu", flags=imgui.WINDOW_NO_TITLE_BAR | imgui.WINDOW_NO_RESIZE | imgui.WINDOW_NO_MOVE | imgui.WINDOW_NO_SCROLLBAR)
 
-        # imgui.begin("Menu")
         if imgui.begin_tab_bar("TabBar"):
             with imgui.font(self.new_font):
                 if imgui.begin_tab_item("游戏选项").selected:
-                    changed1, game_radio1 = imgui.checkbox("重返未来:1999", game_radio1)
-                    changed2, game_radio2 = imgui.checkbox("食物语", game_radio2)
-                    changed3, game_radio3 = imgui.checkbox("崩坏:星穹铁道", game_radio3)
-                    if changed1:
-                        cfg.set_value("1999-button",game_radio1)
-                    if changed2:
-                        cfg.set_value("food_language-button", game_radio2)
-                    if changed3:
-                        cfg.set_value("Honkai: Star Rail", game_radio3)
+                    changed1, ui_state["game_radio1"] = imgui.checkbox("重返未来:1999", ui_state["game_radio1"])
+                    changed2, ui_state["game_radio2"] = imgui.checkbox("食物语", ui_state["game_radio2"])
+                    changed3, ui_state["game_radio3"] = imgui.checkbox("崩坏:星穹铁道", ui_state["game_radio3"])
                     imgui.end_tab_item()
-
                 if imgui.begin_tab_item("日志").selected:
                     if imgui.button("测试"):
                         self.log.debug("为了确保所有文本都使用加载的字体，你可以在每个需要显示中文的区域使用 with imgui.font(new_font):。例如：为了确保所有文本都使用加载的字体，你可以在每个需要显示中文的区域使用 with imgui.font(new_font):。例如：为了确保所有文本都使用加载的字体，你可以在每个需要显示中文的区域使用 with imgui.font(new_font):。例如：为了确保所有文本都使用加载的字体，你可以在每个需要显示中文的区域使用 with imgui.font(new_font):。例如：")
@@ -137,23 +133,57 @@ class PyImgui:
                         # 自动滚动到最底部
                         imgui.set_scroll_here_y(1.0)
                     imgui.end_tab_item()
-                if game_radio1:
+                if ui_state["game_radio1"]:
                     if imgui.begin_tab_item("重返未来:1999").selected:
                         imgui.text("1999-button...")
                         imgui.end_tab_item()
-                if game_radio2:
+                if ui_state["game_radio2"]:
                     if imgui.begin_tab_item("食物语").selected:
-                        expanded, visible = imgui.collapsing_header("Expand me!", None)
+                        expanded, visible = imgui.collapsing_header("日常任务", None)
                         if expanded:
-                            imgui.button("Now you see me!")
-                            imgui.button("Now you see me!")
-                            imgui.button("Now you see me!")
-                            imgui.button("Now you see me!")
-                            imgui.button("Now you see me!")
+                            mail_button, ui_state["mail_state"] = imgui.checkbox("每日邮件", ui_state["mail_state"])
+                            if mail_button:
+                                cfg.set_value("mail-button", ui_state["mail_state"])
+                            imgui.same_line()
+                            signin_button, ui_state["signin_state"] = imgui.checkbox("签到奖励", ui_state["signin_state"])
+                            if signin_button:
+                                cfg.set_value("signin-button", ui_state["signin_state"])
+                            imgui.same_line()
+                            activity_button, ui_state["activity_state"] = imgui.checkbox("活动", ui_state["activity_state"])
+                            if activity_button:
+                                cfg.set_value("activity-button", ui_state["activity_state"])
+                        expanded, visible = imgui.collapsing_header("战斗", None)
+                        if expanded:
+                            activity_button, ui_state["activity_state"] = imgui.checkbox("活动", ui_state["activity_state"])
+                        expanded, visible = imgui.collapsing_header("账号管理", None)
+                        if expanded:
+                            if imgui.button("添加账号"):
+                                ui_state["show_second_window"] = True
+                            if ui_state["show_second_window"]:
+                                # 获取 GLFW 窗口当前大小
+                                width, height = glfw.get_window_size(self.window)
+                                # 设置 ImGui 窗口与 GLFW 窗口相同大小，并贴近边缘
+                                imgui.set_next_window_position(0, 0)
+                                imgui.set_next_window_size(width, height)
+                                # 开始一个新的窗口
+                                with imgui.begin("Example: empty window",closable=True):
+                                    pass
+
+                                # opened, _ = imgui.begin("ssss",closable=True, flags=imgui.WINDOW_NO_RESIZE | imgui.WINDOW_NO_COLLAPSE | imgui.WINDOW_ALWAYS_USE_WINDOW_PADDING)
+                                #
+                                # # 在窗口中显示一些文本
+                                # imgui.text("这是第二个窗口的内容")
+                                # # 结束第二个窗口
+                                # imgui.end()
+                                # # 如果窗口被关闭，通过关闭按钮或其他方式就会更新窗口状态
+                                #
+                                # print(opened)
+                                # if not opened:
+                                #     ui_state["show_second_window"] = False
                         imgui.end_tab_item()
-                if game_radio3:
-                    with imgui.begin_tab_item("崩坏:星穹铁道", opened=game_radio3) as item3:
-                        game_radio3 = item3.opened
+                if ui_state["game_radio3"]:
+                    with imgui.begin_tab_item("崩坏:星穹铁道", opened=ui_state["game_radio3"]) as item3:
+                        ui_state["game_radio3"] = item3.opened
                         if item3.selected:
                             imgui.text("Honkai: Star Rail-button...")
 
