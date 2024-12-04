@@ -2,7 +2,7 @@ import sys
 import json
 import time
 from typing import Optional
-from core.log.log import Log
+from log import Log
 from ruamel.yaml import YAML
 from utils.singleton import SingletonMeta
 
@@ -52,7 +52,7 @@ class Config(metaclass=SingletonMeta):
             with open(path, 'r', encoding='utf-8') as file:
                 loaded_config = self.yaml.load(file)
                 if loaded_config:
-                    # self.config.update(loaded_config)
+                    # self.configuration.update(loaded_config)
                     self._update_config(self.config, loaded_config)
                     self.save_config()
         except FileNotFoundError:

@@ -3,18 +3,18 @@ import glfw
 import imgui
 import threading
 from OpenGL.GL import *
-from core.log import Log
-from core.log import log
+from log import Log
+from log import log
 from ctypes import windll
 from typing import Optional
-from core.config import cfg
+from config import cfg
 from utils.time_utils import TimeUtil
 from imgui.integrations.glfw import GlfwRenderer
 
-import core.game as game
-import core.login as login
-import core.launcher as launcher
-import core.tasks.reward as reward
+import game as game
+import login as login
+import launcher as launcher
+import tasks.reward as reward
 
 ui_state = {
     "game_radio1": False,

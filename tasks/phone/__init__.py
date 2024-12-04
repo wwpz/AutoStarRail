@@ -1,7 +1,7 @@
 
 from .mail import Mail
-from core.log import log
-from core.automation import auto
+from log import log
+from automation import auto
 
 class Phone:
 

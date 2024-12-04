@@ -1,6 +1,6 @@
 import pyautogui
 
-from core.log import Log
+from log import Log
 from typing import Optional
 from utils.game_utils import GameUtil
 

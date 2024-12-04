@@ -1,6 +1,6 @@
 import time
 
-from core.automation import auto
+from automation import auto
 from ..template import Template
 
 

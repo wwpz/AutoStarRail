@@ -2,15 +2,11 @@ import os
 import sys
 import pyuac
 import atexit
-import time
-import core.game as game
-import core.pyimgui as py_imgui
+import game as game
+import pyimgui as py_imgui
 
 
-from core.log import log
-import core.launcher as launcher
-import core.tasks.reward as reward
-import core.simulator_game as simulator_game
+from log import log
 
 # 将当前工作目录设置为程序所在的目录，确保无论从哪里执行，其工作目录都正确设置为程序本身的位置，避免路径错误。
 os.chdir(

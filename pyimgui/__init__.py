@@ -1,6 +1,6 @@
 import glfw
 
-from core.log import log
+from log import log
 from .pyimgui import PyImgui
 
 py_imgui = PyImgui(log)

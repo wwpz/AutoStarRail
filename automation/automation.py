@@ -6,8 +6,8 @@ import numpy as np
 
 from .input import Input
 from typing import Optional
-from core.config import cfg
-from core.log.log import Log
+from config import cfg
+from log.log import Log
 from datetime import datetime
 from .screenshot import Screenshot
 from utils.singleton import SingletonMeta

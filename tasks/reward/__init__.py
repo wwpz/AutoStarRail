@@ -1,9 +1,9 @@
 from .mail import Mail
 from .signin import Signin
 from .activity import Activity
-from core.log import log
-from core.config import cfg
-from core.automation import auto
+from log import log
+from config import cfg
+from automation import auto
 
 class Reward:
 

@@ -1,6 +1,6 @@
 import time
-from core.log import Log
-from datetime import datetime, timedelta
+from log import Log
+from datetime import datetime
 
 log = Log()
 

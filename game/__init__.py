@@ -1,10 +1,10 @@
 import os
-from core.log import log
-from core.config import cfg
+from log import log
+from config import cfg
 from datetime import datetime
-from core.automation import auto
+from automation import auto
 from utils.time_utils import TimeUtil
-from core.launcher import GameLauncher
+from launcher import GameLauncher
 
 launch = GameLauncher(cfg.game_path, cfg.game_process_name, cfg.game_type, cfg.window_name, cfg.window_class, log)
 game_state = True
