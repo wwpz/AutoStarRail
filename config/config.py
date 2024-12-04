@@ -1,9 +1,10 @@
 import sys
 import json
 import time
-from typing import Optional
 from log import Log
+from typing import Optional
 from ruamel.yaml import YAML
+from types import SimpleNamespace
 from utils.singleton import SingletonMeta
 
 
@@ -88,6 +89,18 @@ class Config(metaclass=SingletonMeta):
             return data.get(key, None)
         except (FileNotFoundError, TypeError) as e:
             self.log.debug(f"Error accessing JSON data: {e}")
+            return None
+
+    def load_json_as_object(self, file_path):
+        try:
+            with open(file_path, 'r', encoding='utf-8') as file:
+                # 读取 JSON 数据
+                data = json.load(file)
+
+            # 将字典转换为 SimpleNamespace 对象，以支持点号访问
+            return json.loads(json.dumps(data), object_hook=lambda d: SimpleNamespace(**d))
+        except (FileNotFoundError, TypeError, json.JSONDecodeError) as e:
+            self.log.debug(f"转换json对象失败: {e}")
             return None
 
     def __getattr__(self, attr):

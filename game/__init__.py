@@ -27,7 +27,12 @@ def start_simulator_game():
         if launch.game_type == "food_language":
             # 点击启动游戏
             log.info("正在启动" + "食物语" + "中....")
-            if auto.click_element("./res/food_language/basics/startup_icon_1.png"):
+
+            json_object = cfg.load_json_as_object("./res/config/user_info.json")
+            user = getattr(json_object, cfg.user_account)
+            if user is None:
+                return False
+            if auto.click_element(f"./res/food_language/basics/{user.icon}.png"):
                 TimeUtil.wait_time(15)
                 # 适配用户协议和隐私政策更新提示，需要点击“接受”
                 log.debug("是否需要同意游戏隐私政策?")
