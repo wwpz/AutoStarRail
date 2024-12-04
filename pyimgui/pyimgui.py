@@ -10,7 +10,7 @@ from typing import Optional
 from config import cfg
 from utils.time_utils import TimeUtil
 from imgui.integrations.glfw import GlfwRenderer
-
+from .modules import account
 import game as game
 import login as login
 import launcher as launcher
@@ -24,9 +24,8 @@ ui_state = {
     "mail_state": False,
     "signin_state": False,
     "activity_state": False,
-    "show_second_window": False,
-    "input_buffer":"请输入账号...."
 }
+
 
 def run_reward():
     if launcher.start():
@@ -116,7 +115,8 @@ class PyImgui:
         # 设置 ImGui 窗口与 GLFW 窗口相同大小，并贴近边缘
         imgui.set_next_window_position(0, 0)
         imgui.set_next_window_size(width, height)
-        imgui.begin("Menu", flags=imgui.WINDOW_NO_TITLE_BAR | imgui.WINDOW_NO_RESIZE | imgui.WINDOW_NO_MOVE | imgui.WINDOW_NO_SCROLLBAR)
+        imgui.begin("Menu",
+                    flags=imgui.WINDOW_NO_TITLE_BAR | imgui.WINDOW_NO_RESIZE | imgui.WINDOW_NO_MOVE | imgui.WINDOW_NO_SCROLLBAR)
 
         if imgui.begin_tab_bar("TabBar"):
             with imgui.font(self.new_font):
@@ -124,15 +124,6 @@ class PyImgui:
                     changed1, ui_state["game_radio1"] = imgui.checkbox("重返未来:1999", ui_state["game_radio1"])
                     changed2, ui_state["game_radio2"] = imgui.checkbox("食物语", ui_state["game_radio2"])
                     changed3, ui_state["game_radio3"] = imgui.checkbox("崩坏:星穹铁道", ui_state["game_radio3"])
-                    imgui.end_tab_item()
-                if imgui.begin_tab_item("日志").selected:
-                    if imgui.button("测试"):
-                        self.log.debug("为了确保所有文本都使用加载的字体，你可以在每个需要显示中文的区域使用 with imgui.font(new_font):。例如：为了确保所有文本都使用加载的字体，你可以在每个需要显示中文的区域使用 with imgui.font(new_font):。例如：为了确保所有文本都使用加载的字体，你可以在每个需要显示中文的区域使用 with imgui.font(new_font):。例如：为了确保所有文本都使用加载的字体，你可以在每个需要显示中文的区域使用 with imgui.font(new_font):。例如：")
-                    with imgui.begin_child("region", -1, -50, border=True):
-                        for log_message in self.log.logs:
-                            imgui.text_wrapped(log_message)
-                        # 自动滚动到最底部
-                        imgui.set_scroll_here_y(1.0)
                     imgui.end_tab_item()
                 if ui_state["game_radio1"]:
                     if imgui.begin_tab_item("重返未来:1999").selected:
@@ -146,58 +137,44 @@ class PyImgui:
                             if mail_button:
                                 cfg.set_value("mail-button", ui_state["mail_state"])
                             imgui.same_line()
-                            signin_button, ui_state["signin_state"] = imgui.checkbox("签到奖励", ui_state["signin_state"])
+                            signin_button, ui_state["signin_state"] = imgui.checkbox("签到奖励",
+                                                                                     ui_state["signin_state"])
                             if signin_button:
                                 cfg.set_value("signin-button", ui_state["signin_state"])
                             imgui.same_line()
-                            activity_button, ui_state["activity_state"] = imgui.checkbox("活动", ui_state["activity_state"])
+                            activity_button, ui_state["activity_state"] = imgui.checkbox("活动",
+                                                                                         ui_state["activity_state"])
                             if activity_button:
                                 cfg.set_value("activity-button", ui_state["activity_state"])
                         expanded, visible = imgui.collapsing_header("战斗", None)
                         if expanded:
-                            activity_button, ui_state["activity_state"] = imgui.checkbox("活动", ui_state["activity_state"])
+                            activity_button, ui_state["activity_state"] = imgui.checkbox("活动",
+                                                                                         ui_state["activity_state"])
                         expanded, visible = imgui.collapsing_header("账号管理", None)
                         if expanded:
-                            if imgui.button("添加账号"):
-                                ui_state["show_second_window"] = True
-                            if ui_state["show_second_window"]:
-                                # 获取 GLFW 窗口当前大小
-                                width, height = glfw.get_window_size(self.window)
-                                # 设置 ImGui 窗口与 GLFW 窗口相同大小，并贴近边缘
-                                imgui.set_next_window_position(0, 0)
-                                imgui.set_next_window_size(width, height)
-                                # 开始一个新的窗口
-                                with imgui.begin("添加账号",closable=True, flags=imgui.WINDOW_NO_RESIZE | imgui.WINDOW_NO_COLLAPSE | imgui.WINDOW_ALWAYS_USE_WINDOW_PADDING) as window:
-                                    imgui.text("账号：")
-                                    # 创建一个输入框
-                                    changed, input_buffer = imgui.input_text("Input", ui_state["input_buffer"], 256,)
-                                    if changed:
-                                        # 当用户输入发生变化时，处理输入的变化
-                                        print("Current input:", input_buffer)
-
-                                    imgui.dummy(0, 50)
-                                    imgui.text("密码：")
-                                    # 创建密码输入框
-                                    changed, password_buffer = imgui.input_text(
-                                        "Password", "password_buffer", 256, imgui.INPUT_TEXT_PASSWORD
-                                    )
-                                    if changed:
-                                        # 当用户输入发生变化时，处理输入的变化
-                                        print("Current input:", password_buffer)
-                                    if not window.opened:
-                                        ui_state["show_second_window"] = False
+                            account.renderAccount(self.window,glfw)
                         imgui.end_tab_item()
                 if ui_state["game_radio3"]:
                     with imgui.begin_tab_item("崩坏:星穹铁道", opened=ui_state["game_radio3"]) as item3:
                         ui_state["game_radio3"] = item3.opened
                         if item3.selected:
                             imgui.text("Honkai: Star Rail-button...")
-
+                if imgui.begin_tab_item("日志").selected:
+                    if imgui.button("测试"):
+                        self.log.debug(
+                            "为了确保所有文本都使用加载的字体，你可以在每个需要显示中文的区域使用 with imgui.font(new_font):。例如：为了确保所有文本都使用加载的字体，你可以在每个需要显示中文的区域使用 with imgui.font(new_font):。例如：为了确保所有文本都使用加载的字体，你可以在每个需要显示中文的区域使用 with imgui.font(new_font):。例如：为了确保所有文本都使用加载的字体，你可以在每个需要显示中文的区域使用 with imgui.font(new_font):。例如：")
+                    with imgui.begin_child("region", -1, -50, border=True):
+                        for log_message in self.log.logs:
+                            imgui.text_wrapped(log_message)
+                        # 自动滚动到最底部
+                        imgui.set_scroll_here_y(1.0)
+                    imgui.end_tab_item()
                 imgui.end_tab_bar()
 
         # 检查鼠标是否在 ImGui 窗口内
         # is_hovering = self.is_mouse_hovering()
-
+        # 间隔
+        imgui.dummy(0, 20)
         if imgui.button("Start"):
             # 创建线程
             thread = threading.Thread(target=run_reward)

@@ -7,7 +7,6 @@ from utils.time_utils import TimeUtil
 from launcher import GameLauncher
 
 launch = GameLauncher(cfg.game_path, cfg.game_process_name, cfg.game_type, cfg.window_name, cfg.window_class, log)
-game_state = True
 
 
 def start():
