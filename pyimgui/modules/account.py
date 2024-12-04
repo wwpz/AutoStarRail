@@ -3,6 +3,7 @@ import json
 from config import cfg
 from utils.AESCipher import AESCipher
 
+data = []
 ui_state = {
     "show_second_window": False,
     "input_example": "请输入账号...",
@@ -10,6 +11,23 @@ ui_state = {
     "user_account": '',
     "user_password": '',
 }
+
+# 初始化解密器
+cipher = AESCipher(cfg.aes_password, cfg.aes_salt)
+
+
+# 更新数据
+def update_data():
+    global data
+    parsed_data = load_existing_data("./res/config/user_info.json")
+    data = [
+        {
+            "User Account": cipher.decrypt(value["user_account"]),
+            "Password": cipher.decrypt(value["password"]),
+            "Icon": value["icon"]
+        }
+        for value in parsed_data.values()
+    ]
 
 
 def load_existing_data(filepath):
@@ -31,7 +49,34 @@ def reset_ui_state():
     ui_state["show_second_window"] = False
 
 
-def renderAccount(window, glfw):
+# 初始数据加载
+update_data()
+
+
+def render(window, glfw):
+    global data
+    if imgui.begin_table("table", 3, imgui.TABLE_BORDERS | imgui.TABLE_RESIZABLE):
+        # 表头
+        imgui.table_setup_column("User Account")
+        imgui.table_setup_column("Password")
+        imgui.table_setup_column("Icon")
+        imgui.table_headers_row()
+
+        # 数据行
+        for row in data:
+            imgui.table_next_row()
+
+            imgui.table_set_column_index(0)
+            imgui.text(row["User Account"])
+
+            imgui.table_set_column_index(1)
+            imgui.text(row["Password"])
+
+            imgui.table_set_column_index(2)
+            imgui.text(row["Icon"])
+
+        imgui.end_table()
+
     if imgui.button("添加账号"):
         ui_state["show_second_window"] = True
     if ui_state["show_second_window"]:
@@ -67,21 +112,29 @@ def renderAccount(window, glfw):
                 ui_state["user_password"] = password_buffer
 
             if imgui.button("添加"):
-                cipher = AESCipher(cfg.aes_password, cfg.aes_salt)
+                # 加密用户输入
                 encrypted_account = cipher.encrypt(ui_state["user_account"])
                 encrypted_password = cipher.encrypt(ui_state["user_password"])
 
-                data = load_existing_data("./res/config/user_info.json")
+                # 加载现有数据
+                existing_data = load_existing_data("./res/config/user_info.json")
 
+                # 创建新条目
                 user_id = encrypted_account
                 new_entry = {
                     "user_account": encrypted_account,
                     "password": encrypted_password,
                     "icon": "startup_icon"
                 }
+                existing_data[user_id] = new_entry
 
-                data[user_id] = new_entry
-                save_data("./res/config/user_info.json", data)
+                # 保存新数据
+                save_data("./res/config/user_info.json", existing_data)
+
+                # 重新加载和更新表格数据
+                update_data()
+
+                # 重置输入框
                 reset_ui_state()
 
             if not window.opened:

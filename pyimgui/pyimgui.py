@@ -152,7 +152,7 @@ class PyImgui:
                                                                                          ui_state["activity_state"])
                         expanded, visible = imgui.collapsing_header("账号管理", None)
                         if expanded:
-                            account.renderAccount(self.window,glfw)
+                            account.render(self.window,glfw)
                         imgui.end_tab_item()
                 if ui_state["game_radio3"]:
                     with imgui.begin_tab_item("崩坏:星穹铁道", opened=ui_state["game_radio3"]) as item3:
