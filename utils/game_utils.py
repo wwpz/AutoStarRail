@@ -4,7 +4,7 @@ import psutil
 import ctypes
 import win32gui
 import subprocess
-from core.log import Log
+from log import Log
 from typing import Literal, Tuple, Optional
 
 

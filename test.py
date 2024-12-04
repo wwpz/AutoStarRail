@@ -1,14 +1,6 @@
-import subprocess
-import pyautogui
-import win32gui
-import cv2
-import numpy as np
 import ctypes
 from ctypes import windll
-from PIL import ImageGrab
 import time
-from core.automation.screenshot import Screenshot
-from core.automation import auto
 import win32gui
 import win32api
 import win32con

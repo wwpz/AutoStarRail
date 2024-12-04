@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-from core.log.log import Log
+from log import Log
 
 log = Log()
 
