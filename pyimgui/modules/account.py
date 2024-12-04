@@ -1,4 +1,7 @@
 import imgui
+import json
+from config import cfg
+from utils.AESCipher import AESCipher
 
 ui_state = {
     "show_second_window": False,
@@ -7,6 +10,25 @@ ui_state = {
     "user_account": '',
     "user_password": '',
 }
+
+
+def load_existing_data(filepath):
+    try:
+        with open(filepath, 'r', encoding='utf-8') as file:
+            return json.load(file)
+    except FileNotFoundError:
+        return {}
+
+
+def save_data(filepath, data):
+    with open(filepath, 'w', encoding='utf-8') as file:
+        json.dump(data, file, indent=4, ensure_ascii=False)
+
+
+def reset_ui_state():
+    ui_state["user_account"] = ''
+    ui_state["user_password"] = ''
+    ui_state["show_second_window"] = False
 
 
 def renderAccount(window, glfw):
@@ -36,12 +58,31 @@ def renderAccount(window, glfw):
             imgui.same_line()
             # 增加缩进
             imgui.indent(99)
-            # 创建密码输入框
-            changed, password_buffer = imgui.input_text_with_hint("##password", ui_state[
-                "input_password_example"], ui_state["user_password"], 256,
+            changed, password_buffer = imgui.input_text_with_hint("##password",
+                                                                  ui_state["input_password_example"],
+                                                                  ui_state["user_password"], 256,
                                                                   flags=imgui.INPUT_TEXT_PASSWORD)
             if changed:
                 # 当用户输入发生变化时，处理输入的变化
                 ui_state["user_password"] = password_buffer
+
+            if imgui.button("添加"):
+                cipher = AESCipher(cfg.aes_password, cfg.aes_salt)
+                encrypted_account = cipher.encrypt(ui_state["user_account"])
+                encrypted_password = cipher.encrypt(ui_state["user_password"])
+
+                data = load_existing_data("./res/config/user_info.json")
+
+                user_id = encrypted_account
+                new_entry = {
+                    "user_account": encrypted_account,
+                    "password": encrypted_password,
+                    "icon": "startup_icon"
+                }
+
+                data[user_id] = new_entry
+                save_data("./res/config/user_info.json", data)
+                reset_ui_state()
+
             if not window.opened:
-                ui_state["show_second_window"] = False
+                reset_ui_state()

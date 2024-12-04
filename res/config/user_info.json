@@ -1,12 +1,7 @@
 {
-  "99999": {
-    "user_con" : "88888",
-    "password" : "xxx",
-    "icon": "startup_icon_1"
-  },
-  "88888": {
-    "user_con" : "88888",
-    "password" : "xxx",
-    "icon": "startup_icon"
-  }
+    "zXrev5whmHlBiE4Iy+UUvHieynq02qH4bdMMt04XIMLVMg==": {
+        "user_account": "zXrev5whmHlBiE4Iy+UUvHieynq02qH4bdMMt04XIMLVMg==",
+        "password": "bzFZ7qYAxgVy0YHorCEPU9vrHL+ENvlX9XXf8hmX9s5tAQ==",
+        "icon": "startup_icon"
+    }
 }
