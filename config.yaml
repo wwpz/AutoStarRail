@@ -1,7 +1,0 @@
-# 游戏设置
-game_title_name: 崩坏：星穹铁道 # 游戏窗口标题。
-game_process_name: MuMuPlayer # 游戏进程名。
-game_path: E:\MuMu Player 12\shell\MuMuPlayer.exe # 游戏安装路径。
-game_type: food_language # 游戏类型
-window_name: MuMu模拟器12 # 窗口名称
-window_class: Qt5156QWindowIcon # 窗口类
