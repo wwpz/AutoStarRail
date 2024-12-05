@@ -123,7 +123,7 @@ def render(window, glfw):
                 user_id = encrypted_account
                 new_entry = {
                     "user_account": encrypted_account,
-                    "password": encrypted_password,
+                    "user_password": encrypted_password,
                     "icon": "startup_icon"
                 }
                 existing_data[user_id] = new_entry

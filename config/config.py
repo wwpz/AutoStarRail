@@ -91,14 +91,20 @@ class Config(metaclass=SingletonMeta):
             self.log.debug(f"Error accessing JSON data: {e}")
             return None
 
-    def load_json_as_object(self, file_path):
+    def load_json_as_object(self, file_path, cipher):
         try:
             with open(file_path, 'r', encoding='utf-8') as file:
                 # 读取 JSON 数据
                 data = json.load(file)
-
-            # 将字典转换为 SimpleNamespace 对象，以支持点号访问
-            return json.loads(json.dumps(data), object_hook=lambda d: SimpleNamespace(**d))
+                decryData = {
+                    cipher.decrypt(key): SimpleNamespace(
+                        user_account=cipher.decrypt(value["user_account"]),
+                        user_password=cipher.decrypt(value["user_password"]),
+                        icon=value["icon"]
+                    )
+                    for key, value in data.items()
+                }
+                return decryData  # 直接返回字典
         except (FileNotFoundError, TypeError, json.JSONDecodeError) as e:
             self.log.debug(f"转换json对象失败: {e}")
             return None
