@@ -5,8 +5,11 @@ from datetime import datetime
 from automation import auto
 from utils.time_utils import TimeUtil
 from launcher import GameLauncher
+from utils.AESCipher import AESCipher
 
 launch = GameLauncher(cfg.game_path, cfg.game_process_name, cfg.game_type, cfg.window_name, cfg.window_class, log)
+# 初始化解密器
+cipher = AESCipher(cfg.aes_password, cfg.aes_salt)
 
 
 def start():
@@ -27,9 +30,8 @@ def start_simulator_game():
         if launch.game_type == "food_language":
             # 点击启动游戏
             log.info("正在启动" + "食物语" + "中....")
-
-            json_object = cfg.load_json_as_object("./res/config/user_info.json")
-            user = getattr(json_object, cfg.user_account)
+            json_object = cfg.load_json_as_object("./res/config/user_info.json", cipher)
+            user = json_object.get(cfg.user_account)
             if user is None:
                 return False
             if auto.click_element(f"./res/food_language/basics/{user.icon}.png"):
