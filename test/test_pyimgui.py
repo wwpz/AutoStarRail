@@ -120,6 +120,14 @@ def main():
 
             imgui.end_table()
 
+        current = 2
+
+        clicked, current = imgui.combo(
+            "combo", current, ["first", "second", "third"]
+        )
+
+        if clicked:
+            print(current)
 
         imgui.end()
 
