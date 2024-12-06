@@ -1,0 +1,9 @@
+{
+    "food_language": {
+        "daily_task": {
+            "mail": true,
+            "signin": true,
+            "activity": false
+        }
+    }
+}
