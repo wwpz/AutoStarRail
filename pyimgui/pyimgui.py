@@ -7,10 +7,11 @@ from log import Log
 from log import log
 from ctypes import windll
 from typing import Optional
-from config import cfg
 from utils.time_utils import TimeUtil
 from imgui.integrations.glfw import GlfwRenderer
-from .modules import account
+from .modules.food_language import account_mg as account
+from .modules.food_language import daily_task as daily
+from .modules.food_language import replica_task as replica
 import game as game
 import login as login
 import launcher as launcher
@@ -120,45 +121,26 @@ class PyImgui:
 
         if imgui.begin_tab_bar("TabBar"):
             with imgui.font(self.new_font):
-                if imgui.begin_tab_item("游戏选项").selected:
-                    changed1, ui_state["game_radio1"] = imgui.checkbox("重返未来:1999", ui_state["game_radio1"])
-                    changed2, ui_state["game_radio2"] = imgui.checkbox("食物语", ui_state["game_radio2"])
-                    changed3, ui_state["game_radio3"] = imgui.checkbox("崩坏:星穹铁道", ui_state["game_radio3"])
+                # if imgui.begin_tab_item("游戏选项").selected:
+                #     changed1, ui_state["game_radio1"] = imgui.checkbox("重返未来:1999", ui_state["game_radio1"])
+                #     changed2, ui_state["game_radio2"] = imgui.checkbox("食物语", ui_state["game_radio2"])
+                #     changed3, ui_state["game_radio3"] = imgui.checkbox("崩坏:星穹铁道", ui_state["game_radio3"])
+                #     imgui.end_tab_item()
+                # if ui_state["game_radio1"]:
+                #     if imgui.begin_tab_item("重返未来:1999").selected:
+                #         imgui.text("1999-button...")
+                #         imgui.end_tab_item()
+                # if ui_state["game_radio2"]:
+                if imgui.begin_tab_item("食物语").selected:
+                    daily.render()
+                    replica.render()
+                    account.render(self.window, glfw)
                     imgui.end_tab_item()
-                if ui_state["game_radio1"]:
-                    if imgui.begin_tab_item("重返未来:1999").selected:
-                        imgui.text("1999-button...")
-                        imgui.end_tab_item()
-                if ui_state["game_radio2"]:
-                    if imgui.begin_tab_item("食物语").selected:
-                        expanded, visible = imgui.collapsing_header("日常任务", None)
-                        if expanded:
-                            mail_button, ui_state["mail_state"] = imgui.checkbox("每日邮件", ui_state["mail_state"])
-                            if mail_button:
-                                cfg.set_value("mail-button", ui_state["mail_state"])
-                            imgui.same_line()
-                            signin_button, ui_state["signin_state"] = imgui.checkbox("签到奖励",
-                                                                                     ui_state["signin_state"])
-                            if signin_button:
-                                cfg.set_value("signin-button", ui_state["signin_state"])
-                            imgui.same_line()
-                            activity_button, ui_state["activity_state"] = imgui.checkbox("活动",
-                                                                                         ui_state["activity_state"])
-                            if activity_button:
-                                cfg.set_value("activity-button", ui_state["activity_state"])
-                        expanded, visible = imgui.collapsing_header("战斗", None)
-                        if expanded:
-                            activity_button, ui_state["activity_state"] = imgui.checkbox("活动",
-                                                                                         ui_state["activity_state"])
-                        expanded, visible = imgui.collapsing_header("账号管理", None)
-                        if expanded:
-                            account.render(self.window,glfw)
-                        imgui.end_tab_item()
-                if ui_state["game_radio3"]:
-                    with imgui.begin_tab_item("崩坏:星穹铁道", opened=ui_state["game_radio3"]) as item3:
-                        ui_state["game_radio3"] = item3.opened
-                        if item3.selected:
-                            imgui.text("Honkai: Star Rail-button...")
+                # if ui_state["game_radio3"]:
+                #     with imgui.begin_tab_item("崩坏:星穹铁道", opened=ui_state["game_radio3"]) as item3:
+                #         ui_state["game_radio3"] = item3.opened
+                #         if item3.selected:
+                #             imgui.text("Honkai: Star Rail-button...")
                 if imgui.begin_tab_item("日志").selected:
                     if imgui.button("测试"):
                         self.log.debug(
