@@ -5,10 +5,12 @@ import threading
 from OpenGL.GL import *
 from log import Log
 from log import log
+from config import cfg
 from ctypes import windll
 from typing import Optional
 from utils.time_utils import TimeUtil
 from imgui.integrations.glfw import GlfwRenderer
+from utils.AESCipher import AESCipher
 from .modules.food_language import account_mg as account
 from .modules.food_language import daily_task as daily
 from .modules.food_language import replica_task as replica
@@ -23,20 +25,28 @@ ui_state = {
     "game_radio1": False,
     "game_radio2": False,
     "game_radio3": False,
-    "opened_apps": False
+    "opened_apps": False,
+    "file_path": "./res/config/user_info.json"
 }
 
 
 def run_reward():
-    if launcher.start():
-        log.info("模拟器启动流程完成")
-        if game.start():
-            log.info("游戏启动流程完成")
-            if login.start():
-                log.info("登录启动流程完成")
-                TimeUtil.wait_time(10)
-                reward.start()
-
+    user = cfg.load_json_decrypt_object(ui_state["file_path"],cipher)
+    length = len(user)
+    # 获取字典的键列表
+    user_ids = list(user.keys())
+    for i in range(length):
+        user_id = user_ids[i]  # 通过索引获取用户 ID
+        cfg.set_value("user_account",user_id)
+        if launcher.start():
+            log.info("模拟器启动流程完成")
+            if game.start():
+                log.info("游戏启动流程完成")
+                if login.start():
+                    log.info("登录启动流程完成")
+                    TimeUtil.wait_time(10)
+                    reward.start()
+                    launcher.stop_game()
 
 class PyImgui:
     def __init__(self, log: Optional[Log] = None):

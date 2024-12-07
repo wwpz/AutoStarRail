@@ -22,6 +22,24 @@ def start():
         print("星铁")
     log.hr("完成启动游戏", 0)
 
+def switch_account():
+    log.hr("开始运行切换模拟器内游戏", 0)
+    if launch.game_type in ["food_language", "1999"]:
+        return start_simulator_game()
+    else:
+        print("星铁")
+    log.hr("完成运行切换模拟器内游戏", 0)
+
+def switch_simulator_game():
+    MAX_RETRY = 3
+    for retry in range(1, MAX_RETRY + 1):
+        auto.press_key("F11")
+        TimeUtil.wait_(2)
+        launch.check_resolution_ratio(1600, 936)
+        if not auto.find_element("./res/food_language/basics/simulator_game_close.png"):
+            launch.stop_game()
+            log.error("未找到模拟器全屏标志,检查模拟器界面是否有干扰")
+        return True
 
 def start_simulator_game():
     MAX_RETRY = 3
