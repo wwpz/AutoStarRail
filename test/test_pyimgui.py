@@ -120,6 +120,31 @@ def main():
 
             imgui.end_table()
 
+        current = 2
+
+        clicked, current = imgui.combo(
+            "combo", current, ["first", "second", "third"]
+        )
+
+        if clicked:
+            print(current)
+
+            # Create a horizontal split
+        imgui.separator()  # Optional: Add a separator
+
+        # Left Side
+        imgui.begin_child("LeftSide", 300, 0, True)  # Width of 300, height auto
+        imgui.text("This is the Left Side")
+        imgui.button("Button 1")
+        imgui.end_child()
+
+        imgui.same_line()  # Same line for right side
+
+        # Right Side
+        imgui.begin_child("RightSide", 300, 0, True)  # Width of 300, height auto
+        imgui.text("This is the Right Side")
+        imgui.button("Button 2")
+        imgui.end_child()
 
         imgui.end()
 

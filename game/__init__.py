@@ -22,6 +22,24 @@ def start():
         print("星铁")
     log.hr("完成启动游戏", 0)
 
+def switch_account():
+    log.hr("开始运行切换模拟器内游戏", 0)
+    if launch.game_type in ["food_language", "1999"]:
+        return start_simulator_game()
+    else:
+        print("星铁")
+    log.hr("完成运行切换模拟器内游戏", 0)
+
+def switch_simulator_game():
+    MAX_RETRY = 3
+    for retry in range(1, MAX_RETRY + 1):
+        auto.press_key("F11")
+        TimeUtil.wait_(2)
+        launch.check_resolution_ratio(1600, 936)
+        if not auto.find_element("./res/food_language/basics/simulator_game_close.png"):
+            launch.stop_game()
+            log.error("未找到模拟器全屏标志,检查模拟器界面是否有干扰")
+        return True
 
 def start_simulator_game():
     MAX_RETRY = 3
@@ -30,11 +48,11 @@ def start_simulator_game():
         if launch.game_type == "food_language":
             # 点击启动游戏
             log.info("正在启动" + "食物语" + "中....")
-            json_object = cfg.load_json_as_object("./res/config/user_info.json", cipher)
+            json_object = cfg.load_json_decrypt_object("./res/config/user_info.json", cipher)
             user = json_object.get(cfg.user_account)
             if user is None:
                 return False
-            if auto.click_element(f"./res/food_language/basics/{user.icon}.png"):
+            if auto.click_element(f"./res/food_language/basics/{user.user_icon}.png"):
                 TimeUtil.wait_time(15)
                 # 适配用户协议和隐私政策更新提示，需要点击“接受”
                 log.debug("是否需要同意游戏隐私政策?")

@@ -91,7 +91,24 @@ class Config(metaclass=SingletonMeta):
             self.log.debug(f"Error accessing JSON data: {e}")
             return None
 
-    def load_json_as_object(self, file_path, cipher):
+    def save_json(self, filepath, data):
+        try:
+            with open(filepath, 'w', encoding='utf-8') as file:
+                json.dump(data, file, indent=4, ensure_ascii=False)
+        except (FileNotFoundError, TypeError, json.JSONDecodeError) as e:
+            self.log.debug(f"保存json对象失败: {e}")
+            return None
+
+    # 加载现有数据
+    def load_existing_json_data(self, filepath):
+        try:
+            with open(filepath, 'r', encoding='utf-8') as file:
+                return json.load(file)
+        except FileNotFoundError as e:
+            self.log.debug(f"读取json对象失败: {e}")
+            return {}
+
+    def load_json_decrypt_object(self, file_path, cipher):
         try:
             with open(file_path, 'r', encoding='utf-8') as file:
                 # 读取 JSON 数据
@@ -100,7 +117,7 @@ class Config(metaclass=SingletonMeta):
                     cipher.decrypt(key): SimpleNamespace(
                         user_account=cipher.decrypt(value["user_account"]),
                         user_password=cipher.decrypt(value["user_password"]),
-                        icon=value["icon"]
+                        user_icon=cipher.decrypt(value["user_icon"])
                     )
                     for key, value in data.items()
                 }

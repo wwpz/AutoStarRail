@@ -73,7 +73,7 @@ def check_simulator_init():
     time.sleep(2)
     launch.check_resolution_ratio(1920, 1080)
     if not auto.find_element("./res/food_language/basics/power_icon.png"):
-        stop(True)
+        launch.stop_game()
         log.error("未找到模拟器全屏标志,检查模拟器界面是否有干扰")
     else:
         log.info("全屏模拟器成功")
@@ -82,16 +82,6 @@ def check_simulator_init():
         return True
 
 
-def stop(detect_loop=False):
+def stop_game():
     log.hr("停止运行", 0)
-
-    if detect_loop and "cfg.after_finish" == "Loop":
-        print("Loop")
-        # after_finish_is_loop()
-    else:
-        if detect_loop:
-            print("notify_after_finish_not_loop()")
-        if "Exit" in ["Exit", "Loop", "Shutdown", "Hibernate", "Sleep", "Logoff"]:
-            launch.shutdown("Exit")
-        log.hr("完成", 2)
-        sys.exit(0)
+    launch.stop_game()
