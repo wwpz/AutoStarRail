@@ -34,7 +34,7 @@ def start_simulator_game():
             user = json_object.get(cfg.user_account)
             if user is None:
                 return False
-            if auto.click_element(f"./res/food_language/basics/{user.icon}.png"):
+            if auto.click_element(f"./res/food_language/basics/{user.user_icon}.png"):
                 TimeUtil.wait_time(15)
                 # 适配用户协议和隐私政策更新提示，需要点击“接受”
                 log.debug("是否需要同意游戏隐私政策?")

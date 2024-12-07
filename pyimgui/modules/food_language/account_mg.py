@@ -20,7 +20,7 @@ cipher = AESCipher(cfg.aes_password, cfg.aes_salt)
 
 # 更新数据
 def update_data():
-    parsed_data = cfg.load_existing_data(ui_state["file_path"])
+    parsed_data = cfg.load_existing_json_data(ui_state["file_path"])
     ui_state["data"] = [
         {
             "user_account": cipher.decrypt(value["user_account"]),
@@ -42,6 +42,8 @@ update_data()
 
 
 def render(window, glfw):
+    # 重新加载和更新表格数据
+    update_data()
     expanded, visible = imgui.collapsing_header("账号管理", None)
     if expanded:
         if imgui.begin_table("table", 4, imgui.TABLE_BORDERS | imgui.TABLE_RESIZABLE):
@@ -128,7 +130,7 @@ def render(window, glfw):
                     encrypted_icon = cipher.encrypt(ui_state["icon_items"][ui_state["icon_current"]])
 
                     # 加载现有数据
-                    existing_data = cfg.load_existing_data(ui_state["file_path"])
+                    existing_data = cfg.load_existing_json_data(ui_state["file_path"])
 
                     # 创建新条目
                     user_id = encrypted_account
@@ -141,9 +143,6 @@ def render(window, glfw):
 
                     # 保存新数据
                     cfg.save_json(ui_state["file_path"], existing_data)
-
-                    # 重新加载和更新表格数据
-                    update_data()
 
                     # 重置输入框
                     reset_ui_state()

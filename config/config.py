@@ -100,7 +100,7 @@ class Config(metaclass=SingletonMeta):
             return None
 
     # 加载现有数据
-    def load_existing_data(self, filepath):
+    def load_existing_json_data(self, filepath):
         try:
             with open(filepath, 'r', encoding='utf-8') as file:
                 return json.load(file)
@@ -117,7 +117,7 @@ class Config(metaclass=SingletonMeta):
                     cipher.decrypt(key): SimpleNamespace(
                         user_account=cipher.decrypt(value["user_account"]),
                         user_password=cipher.decrypt(value["user_password"]),
-                        icon=value["icon"]
+                        user_icon=cipher.decrypt(value["user_icon"])
                     )
                     for key, value in data.items()
                 }
