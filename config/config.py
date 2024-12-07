@@ -108,7 +108,7 @@ class Config(metaclass=SingletonMeta):
             self.log.debug(f"读取json对象失败: {e}")
             return {}
 
-    def load_json_as_object(self, file_path, cipher):
+    def load_json_decrypt_object(self, file_path, cipher):
         try:
             with open(file_path, 'r', encoding='utf-8') as file:
                 # 读取 JSON 数据

@@ -48,7 +48,7 @@ def start_simulator_game():
         if launch.game_type == "food_language":
             # 点击启动游戏
             log.info("正在启动" + "食物语" + "中....")
-            json_object = cfg.load_json_as_object("./res/config/user_info.json", cipher)
+            json_object = cfg.load_json_decrypt_object("./res/config/user_info.json", cipher)
             user = json_object.get(cfg.user_account)
             if user is None:
                 return False

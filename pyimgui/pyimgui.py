@@ -29,6 +29,8 @@ ui_state = {
     "file_path": "./res/config/user_info.json"
 }
 
+# 初始化解密器
+cipher = AESCipher(cfg.aes_password, cfg.aes_salt)
 
 def run_reward():
     user = cfg.load_json_decrypt_object(ui_state["file_path"],cipher)
@@ -74,7 +76,7 @@ class PyImgui:
         # width, height = mode.size.width, mode.size.height
 
         # 创建窗口
-        self.window = glfw.create_window(600, 500, "ImGui Transparent Overlay", None, None)
+        self.window = glfw.create_window(700, 500, "ImGui Transparent Overlay", None, None)
         if not self.window:
             glfw.terminate()
             print("Could not initialize Window")
@@ -141,7 +143,9 @@ class PyImgui:
                     #         imgui.end_tab_item()
                     # if ui_state["game_radio2"]:
                     if imgui.begin_tab_item("食物语").selected:
-                        opened_button, ui_state["opened_apps"] = imgui.checkbox("多开账户", ui_state["opened_apps"])
+                        opened_button, ui_state["opened_apps"] = imgui.checkbox("多开账户?", ui_state["opened_apps"])
+                        imgui.same_line()
+                        opened_button, ui_state["opened_apps"] = imgui.checkbox("需要登录?", ui_state["opened_apps"])
                         if ui_state["opened_apps"]:
                             multiple.render()
                         daily.render()
