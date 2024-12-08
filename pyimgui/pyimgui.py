@@ -32,14 +32,15 @@ ui_state = {
 # 初始化解密器
 cipher = AESCipher(cfg.aes_password, cfg.aes_salt)
 
+
 def run_reward():
-    user = cfg.load_json_decrypt_object(ui_state["file_path"],cipher)
+    user = cfg.load_json_decrypt_object(ui_state["file_path"], cipher)
     length = len(user)
     # 获取字典的键列表
     user_ids = list(user.keys())
     for i in range(length):
         user_id = user_ids[i]  # 通过索引获取用户 ID
-        cfg.set_value("user_account",user_id)
+        cfg.set_value("user_account", user_id)
         if launcher.start():
             log.info("模拟器启动流程完成")
             if game.start():
@@ -49,6 +50,7 @@ def run_reward():
                     TimeUtil.wait_time(10)
                     reward.start()
                     launcher.stop_game()
+
 
 class PyImgui:
     def __init__(self, log: Optional[Log] = None):
@@ -125,13 +127,21 @@ class PyImgui:
         width, height = glfw.get_window_size(self.window)
 
         # 设置 ImGui 窗口与 GLFW 窗口相同大小，并贴近边缘
-        imgui.set_next_window_position(0, 0)
+        # imgui.set_next_window_position(0, 0)
         imgui.set_next_window_size(width, height)
         imgui.begin("Menu",
                     flags=imgui.WINDOW_NO_TITLE_BAR | imgui.WINDOW_NO_RESIZE | imgui.WINDOW_NO_MOVE | imgui.WINDOW_NO_SCROLLBAR)
-        with imgui.begin_child("LeftSide", 490, 0, True):
+        # imgui.show_demo_window()
+        with imgui.begin_child("LeftSide", 490, -18, True):
             with imgui.begin_tab_bar("TabBar"):
                 with imgui.font(self.new_font):
+                    with imgui.begin_main_menu_bar() as main_menu_bar:
+                        if main_menu_bar.opened:
+                            # first menu dropdown
+                            with imgui.begin_menu('设置', True) as file_menu:
+                                if file_menu.opened:
+                                    imgui.menu_item('New', 'Ctrl+N', False, True)
+                                    imgui.menu_item('Open ...', 'Ctrl+O', False, True)
                     # if imgui.begin_tab_item("游戏选项").selected:
                     #     changed1, ui_state["game_radio1"] = imgui.checkbox("重返未来:1999", ui_state["game_radio1"])
                     #     changed2, ui_state["game_radio2"] = imgui.checkbox("食物语", ui_state["game_radio2"])
@@ -172,7 +182,7 @@ class PyImgui:
         # is_hovering = self.is_mouse_hovering()
 
         imgui.same_line()
-        with imgui.begin_child("RightSide", -1, 0, True):
+        with imgui.begin_child("RightSide", -1, -18, True):
             with imgui.font(self.new_font):
                 imgui.text("任务队列")
                 # 分割线
@@ -182,7 +192,7 @@ class PyImgui:
                     # 创建线程
                     thread = threading.Thread(target=run_reward)
                     thread.start()
-    # if imgui.button("Exit"):
+        # if imgui.button("Exit"):
         #     glfw.set_window_should_close(self.window, True)
         imgui.end()
 
