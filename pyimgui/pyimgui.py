@@ -16,6 +16,8 @@ from .modules.food_language import daily_task as daily
 from .modules.food_language import replica_task as replica
 from .modules.food_language import multiple_mg as multiple
 from .modules.food_language import task_queue as task
+from .modules.phone import home as home
+from tasks_queue import TasksQueue
 import game as game
 import login as login
 import launcher as launcher
@@ -31,7 +33,7 @@ ui_state = {
 
 # 初始化解密器
 cipher = AESCipher(cfg.aes_password, cfg.aes_salt)
-
+tasks_queue = TasksQueue()
 
 def run_reward():
     user = cfg.load_json_decrypt_object(ui_state["file_path"], cipher)
@@ -51,6 +53,12 @@ def run_reward():
                     reward.start()
                     launcher.stop_game()
 
+
+def run_phone_reward():
+    print(tasks_queue.is_empty())
+    # 处理任务
+    if not tasks_queue.is_empty():
+        tasks_queue.process_fifo_tasks()  # 现在会执行 Hzh.run()，但不会立即
 
 class PyImgui:
     def __init__(self, log: Optional[Log] = None):
@@ -127,7 +135,7 @@ class PyImgui:
         width, height = glfw.get_window_size(self.window)
 
         # 设置 ImGui 窗口与 GLFW 窗口相同大小，并贴近边缘
-        # imgui.set_next_window_position(0, 0)
+        imgui.set_next_window_position(0, 0)
         imgui.set_next_window_size(width, height)
         imgui.begin("Menu",
                     flags=imgui.WINDOW_NO_TITLE_BAR | imgui.WINDOW_NO_RESIZE | imgui.WINDOW_NO_MOVE | imgui.WINDOW_NO_SCROLLBAR)
@@ -140,8 +148,10 @@ class PyImgui:
                             # first menu dropdown
                             with imgui.begin_menu('设置', True) as file_menu:
                                 if file_menu.opened:
-                                    imgui.menu_item('New', 'Ctrl+N', False, True)
-                                    imgui.menu_item('Open ...', 'Ctrl+O', False, True)
+                                    # submenu
+                                    with imgui.begin_menu('当前运行的', True) as open_recent_menu:
+                                        if open_recent_menu.opened:
+                                            imgui.menu_item('doc.txt', None, False, True)
                     # if imgui.begin_tab_item("游戏选项").selected:
                     #     changed1, ui_state["game_radio1"] = imgui.checkbox("重返未来:1999", ui_state["game_radio1"])
                     #     changed2, ui_state["game_radio2"] = imgui.checkbox("食物语", ui_state["game_radio2"])
@@ -161,6 +171,13 @@ class PyImgui:
                         daily.render()
                         replica.render()
                         account.render(self.window, glfw)
+                        imgui.end_tab_item()
+                    if imgui.begin_tab_item("手机签到").selected:
+                        home.render()
+                        if imgui.button("ok"):
+                            # 创建线程
+                            thread = threading.Thread(target=run_phone_reward)
+                            thread.start()
                         imgui.end_tab_item()
                     # if ui_state["game_radio3"]:
                     #     with imgui.begin_tab_item("崩坏:星穹铁道", opened=ui_state["game_radio3"]) as item3:

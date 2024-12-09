@@ -23,7 +23,7 @@ class TimeUtil:
         while time.time() < end_time:
             remaining_time = int(end_time - time.time())  # 更新剩余时间
             log.debug(f"剩余等待时间: {remaining_time} seconds")  # 每秒打印剩余时间
-            time.sleep(1)  # 添加一个延迟，以避免快速循环
+            time.sleep(0.9)  # 添加一个延迟，以避免快速循环
 
     @staticmethod
     def check_time(target_hour, target_minute):
