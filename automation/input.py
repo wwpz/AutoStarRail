@@ -36,7 +36,7 @@ class Input:
     def mouse_move(self, x, y):
         '''将鼠标光标移动到屏幕上的（x，y）位置'''
         try:
-            pyautogui.moveTo(x, y)
+            pyautogui.moveTo(x, y, 1)
             self.logger.debug(f"鼠标移动 ({x}, {y})")
         except Exception as e:
             self.logger.error(f"鼠标移动出错：{e}")
@@ -46,6 +46,40 @@ class Input:
         for _ in range(count):
             pyautogui.scroll(direction, _pause=pause)
         self.logger.debug(f"滚轮滚动 {count * direction} 次")
+
+    def mouse_middle(self, x, y):
+        '''在屏幕上的（x，y）位置执行鼠标中键点击操作'''
+        try:
+            pyautogui.click(x, y, button='middle')
+            self.logger.debug(f"鼠标中键点击 ({x}, {y})")
+        except Exception as e:
+            self.logger.error(f"鼠标点击出错：{e}")
+
+    def mouse_dragRel(self, x_offset, y_offset, duration=1):
+        """
+       在屏幕上滑动鼠标。
+       :param x_offset: 水平方向滑动的像素距离（正值向右，负值向左）
+       :param y_offset: 垂直方向滑动的像素距离（正值向下，负值向上）
+       :param duration: 滑动的持续时间（秒）
+        mouse_dragRel(300, 0, 1)  # 向右滑动300像素，持续1秒
+        mouse_dragRel(-300, 0, 1)  # 向左滑动300像素，持续1秒
+        mouse_dragRel(0, 300, 1)  # 向下滑动300像素，持续1秒
+        mouse_dragRel(0, -300, 1)  # 向上滑动300像素，持续1秒
+       """
+        try:
+            # 获取当前鼠标位置
+            start_x, start_y = pyautogui.position()
+            self.logger.debug(f"初始鼠标位置: ({start_x}, {start_y})")
+
+            # 使用 dragRel 方法
+            self.logger.debug(f"开始滑动鼠标：相对偏移 ({x_offset}, {y_offset})，持续时间：{duration} 秒")
+            pyautogui.dragRel(x_offset, y_offset, duration=duration, button='left')
+
+            # 获取结束位置
+            end_x, end_y = pyautogui.position()
+            self.logger.debug(f"滑动结束，鼠标结束位置：({end_x}, {end_y})")
+        except Exception as e:
+            self.logger.error(f"鼠标滑动出错：{e}")
 
     def press_key(self, key, wait_time=0.2):
         '''模拟键盘按键，可以指定按下的时间'''

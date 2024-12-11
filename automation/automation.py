@@ -4,14 +4,15 @@ import math
 import os
 import numpy as np
 
-from .input import Input
-from typing import Optional
+import pygetwindow as gw
 from config import cfg
 from log.log import Log
+from .input import Input
+from typing import Optional
 from datetime import datetime
 from .screenshot import Screenshot
-from utils.singleton import SingletonMeta
 from utils.image_utils import ImageUtils
+from utils.singleton import SingletonMeta
 
 
 class Automation(metaclass=SingletonMeta):
@@ -40,6 +41,8 @@ class Automation(metaclass=SingletonMeta):
         self.mouse_up = self.input_handler.mouse_up
         self.mouse_move = self.input_handler.mouse_move
         self.mouse_scroll = self.input_handler.mouse_scroll
+        self.mouse_middle = self.input_handler.mouse_middle
+        self.mouse_dragRel = self.input_handler.mouse_dragRel
         self.press_key = self.input_handler.press_key
         self.secretly_press_key = self.input_handler.secretly_press_key
         self.press_mouse = self.input_handler.press_mouse
@@ -82,7 +85,22 @@ class Automation(metaclass=SingletonMeta):
         center_y = max_loc[1] + height // 2
         return center_x, center_y
 
-    def find_element(self, target, threshold=0.9, max_retries=2, take_screenshot=True, is_save=False, screenshot_module=None):
+    def convert_to_global(self, x, y):
+        """
+        将找到的中心坐标位置匹配为全局中心坐标。
+        :param x: 模板图片。
+        :param y: 最佳匹配位置。
+        :return: 匹配位置的中心坐标。
+        """
+        window = gw.getWindowsWithTitle(self.window_title)
+        if window:
+            win = window[0]
+        else:
+            raise Exception(f"Window with title '{self.window_title}' not found.")
+        return win.left + x, win.top + y
+
+    def find_element(self, target, threshold=0.9, max_retries=2, take_screenshot=True, is_save=False,
+                     screenshot_module=None,is_global=False):
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         today_date = datetime.now().strftime('%Y_%m_%d')
         now_image_name = target.replace('./res/', '')
@@ -142,11 +160,20 @@ class Automation(metaclass=SingletonMeta):
                     if matchVal > 0 and matchLoc != (-1, -1):
                         if mask is not None:
                             if not math.isinf(matchVal) and (threshold is None or matchVal <= threshold):
-                                top_left, bottom_right = self.calculate_center_position(template, matchLoc)
+                                if is_global:
+                                    print("is_global1")
+                                    top_left, bottom_right = self.calculate_center_position(template, matchLoc)
+                                    top_left, bottom_right = self.convert_to_global(top_left, bottom_right)
+                                else:
+                                    top_left, bottom_right = self.calculate_center_position(template, matchLoc)
                                 return top_left, bottom_right, matchVal
                         else:
                             if not math.isinf(matchVal) and (threshold is None or matchVal >= threshold):
-                                top_left, bottom_right = self.calculate_center_position(template, matchLoc)
+                                if is_global:
+                                    top_left, bottom_right = self.calculate_center_position(template, matchLoc)
+                                    top_left, bottom_right = self.convert_to_global(top_left, bottom_right)
+                                else:
+                                    top_left, bottom_right = self.calculate_center_position(template, matchLoc)
                                 return top_left, bottom_right, matchVal
                 except Exception as e:
                     self.log.debug(f"目标图片路径未找到------：{target.replace('./res/', '')}")
@@ -172,6 +199,7 @@ class Automation(metaclass=SingletonMeta):
             "click": self.mouse_click,
             "down": self.mouse_down,
             "move": self.mouse_move,
+            "middle": self.mouse_middle
         }
 
         if action in action_map:
@@ -181,7 +209,8 @@ class Automation(metaclass=SingletonMeta):
 
         return True
 
-    def click_element(self, target, threshold=0.9, max_retries=2, action="click", is_save=False, screenshot_module=None):
+    def click_element(self, target, threshold=0.9, max_retries=2, action="click", is_save=False,
+                      screenshot_module=None,is_global=False):
         """
         查找并点击屏幕上的元素。
 
@@ -192,11 +221,13 @@ class Automation(metaclass=SingletonMeta):
         :param action: 执行的动作。
         :param is_save: 是否保存当前截图。
         :param screenshot_module: 保存的图片模块。
+        :param is_global: 是否全局中心坐标。
 
         返回:
         如果找到元素并点击成功，则返回True；否则返回False。
         """
-        coordinates = self.find_element(target, threshold, max_retries, is_save=is_save, screenshot_module=screenshot_module)
+        coordinates = self.find_element(target, threshold, max_retries, is_save=is_save,
+                                        screenshot_module=screenshot_module,is_global=is_global)
         if coordinates:
             return self.click_element_with_pos(coordinates, action)
         return False
