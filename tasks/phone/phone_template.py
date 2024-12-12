@@ -38,10 +38,11 @@ def open_search():
 
 
 def clear_background():
-    if auto.find_element("./res/phone/basics/menu.png", is_global=True):
-        TimeUtils.wait_(1)
-        if auto.find_element("./res/phone/basics/clear.png", is_global=True):
-            TimeUtils.wait_(1)
+    auto.mouse_move(params["x"], params["y"] + 430)
+    TimeUtils.wait_(1)
+    auto.mouse_dragRel(0, -900, 0.5)
+    if auto.click_element("./res/phone/basics/clear.png", is_global=True):
+        TimeUtils.wait_(2)
 
 
 class PhoneTemplate(ABC):

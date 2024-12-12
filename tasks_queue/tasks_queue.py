@@ -51,3 +51,6 @@ class TasksQueue(metaclass=SingletonMeta):
 
     def queue_len(self):
         return len(self.queue)
+
+    def is_empty(self):
+        return len(self.queue) == 0  # 或者 return not self.queue
