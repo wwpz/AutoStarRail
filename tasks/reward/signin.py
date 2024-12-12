@@ -1,5 +1,3 @@
-import time
-
 from automation import auto
 from utils.time_utils import TimeUtils
 from ..template import Template

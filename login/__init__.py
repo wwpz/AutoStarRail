@@ -1,4 +1,3 @@
-import time
 from config import cfg
 from log import log
 from automation import auto
@@ -50,7 +49,7 @@ def login_simulator_game():
             TimeUtils.wait_time(5)
             if auto.find_element("./res/1999/basics/logout_button.png"):
                 auto.mouse_click(500, 500)
-                time.sleep(1)
+                TimeUtils.wait_(1)
                 auto.mouse_click(500, 500)
                 TimeUtils.wait_time(5)
                 log.info("登录成功...")

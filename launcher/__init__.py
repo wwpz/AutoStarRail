@@ -1,4 +1,3 @@
-import sys
 import time
 from config import cfg
 from log import log
