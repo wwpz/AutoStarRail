@@ -2,7 +2,7 @@ from log import log
 from automation import auto
 from abc import ABC, abstractmethod
 
-from utils.time_utils import TimeUtil
+from utils.time_utils import TimeUtils
 from utils.base_utils import BaseUtils
 
 params = {
@@ -24,7 +24,7 @@ def go_home():
     for i in range(3):
         if BaseUtils.switch_to_game(window_class, title):
             auto.mouse_middle(params["x"], params["y"])
-            TimeUtil.wait_(1)
+            TimeUtils.wait_(1)
         if auto.find_element("./res/phone/basics/home_setting.png"):
             log.debug("在首页")
             break
@@ -32,16 +32,16 @@ def go_home():
 
 def open_search():
     auto.mouse_move(params["x"], params["y"] + 200)
-    TimeUtil.wait_(1)
+    TimeUtils.wait_(1)
     auto.mouse_dragRel(0, -150, 0.1)
-    TimeUtil.wait_(1)
+    TimeUtils.wait_(1)
 
 
 def clear_background():
     if auto.find_element("./res/phone/basics/menu.png", is_global=True):
-        TimeUtil.wait_(1)
+        TimeUtils.wait_(1)
         if auto.find_element("./res/phone/basics/clear.png", is_global=True):
-            TimeUtil.wait_(1)
+            TimeUtils.wait_(1)
 
 
 class PhoneTemplate(ABC):

@@ -3,7 +3,7 @@ from log import log
 from config import cfg
 from datetime import datetime
 from automation import auto
-from utils.time_utils import TimeUtil
+from utils.time_utils import TimeUtils
 from launcher import GameLauncher
 from utils.AESCipher import AESCipher
 
@@ -34,7 +34,7 @@ def switch_simulator_game():
     MAX_RETRY = 3
     for retry in range(1, MAX_RETRY + 1):
         auto.press_key("F11")
-        TimeUtil.wait_(2)
+        TimeUtils.wait_(2)
         launch.check_resolution_ratio(1600, 936)
         if not auto.find_element("./res/food_language/basics/simulator_game_close.png"):
             launch.stop_game()
@@ -53,12 +53,12 @@ def start_simulator_game():
             if user is None:
                 return False
             if auto.click_element(f"./res/food_language/basics/{user.user_icon}.png"):
-                TimeUtil.wait_time(15)
+                TimeUtils.wait_time(15)
                 # 适配用户协议和隐私政策更新提示，需要点击“接受”
                 log.debug("是否需要同意游戏隐私政策?")
                 if auto.click_element("./res/food_language/basics/accept_update.png"):
                     log.debug("同意了游戏隐私政策")
-                TimeUtil.wait_time(25)
+                TimeUtils.wait_time(25)
                 log.debug("游戏是否有热更新?")
                 # 判断是否游戏热更新，需要确认重启
                 if auto.click_element("./res/food_language/basics/confirm.png"):
@@ -66,12 +66,12 @@ def start_simulator_game():
                             lambda: auto.click_element("./res/food_language/basics/confirm_update.png"),
                             300, 3):
                         log.info("游戏更新成功,点击确认重启游戏中...")
-                        TimeUtil.wait_time(40)
+                        TimeUtils.wait_time(40)
                 log.info("无其它干扰,跳过动画")
                 auto.mouse_click(500, 500)
-                TimeUtil.wait_time(1)
+                TimeUtils.wait_time(1)
                 auto.mouse_click(500, 500)
-                TimeUtil.wait_time(15)
+                TimeUtils.wait_time(15)
                 if not launch.wait_until_retries(
                         lambda: auto.click_element("./res/food_language/basics/game_close.png"),
                         10, 3):
@@ -83,7 +83,7 @@ def start_simulator_game():
         else:
             log.info("正在启动" + "1999" + "中....")
             if auto.click_element("./res/1999/basics/startup_icon.png"):
-                TimeUtil.wait_time(50)
+                TimeUtils.wait_time(50)
                 # log.debug("游戏第一次启动语音资源问题?")
                 # if auto.find_element("./res/1999/basics/update_1.png"):
                 #     auto.click_element("./res/1999/basics/next_button.png")

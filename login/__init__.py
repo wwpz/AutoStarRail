@@ -2,7 +2,7 @@ import time
 from config import cfg
 from log import log
 from automation import auto
-from utils.time_utils import TimeUtil
+from utils.time_utils import TimeUtils
 
 
 def start():
@@ -18,15 +18,15 @@ def login_simulator_game():
     if cfg.game_type == "food_language":
         # 判断是否有进入游戏字样
         log.info("登录中...")
-        TimeUtil.wait_time(10)
+        TimeUtils.wait_time(10)
         if auto.find_element("./res/food_language/basics/game_home_login.png"):
             log.info("需要手动登录账号...")
             if auto.click_element("./res/food_language/basics/game_home_login_other.png"):
-                TimeUtil.wait_time(1)
+                TimeUtils.wait_time(1)
                 if auto.click_element("./res/food_language/basics/game_home_login_agree.png"):
-                    TimeUtil.wait_time(1)
+                    TimeUtils.wait_time(1)
                     if auto.click_element("./res/food_language/basics/game_home_login_logo.png"):
-                        TimeUtil.wait_time(1)
+                        TimeUtils.wait_time(1)
                         if auto.click_element("./res/food_language/basics/game_home_login_account.png"):
                             account = cfg.get_value("user_account")
                             for number in account:
@@ -38,21 +38,21 @@ def login_simulator_game():
                                     auto.press_key(number)
                                 log.info(password)
                                 if auto.click_element("./res/food_language/basics/game_home_login.png"):
-                                    TimeUtil.wait_time(5)
+                                    TimeUtils.wait_time(5)
         if auto.find_element("./res/food_language/basics/game_home_enter_game.png"):
             auto.click_element("./res/food_language/basics/game_home_agree_conditions.png")
-            TimeUtil.wait_time(2)  # 防止卡顿等一会
+            TimeUtils.wait_time(2)  # 防止卡顿等一会
             auto.click_element("./res/food_language/basics/game_home_enter_game.png")
             log.info("登录成功...")
             return True
     else:
         if auto.find_element("./res/1999/basics/login_tag.png"):
-            TimeUtil.wait_time(5)
+            TimeUtils.wait_time(5)
             if auto.find_element("./res/1999/basics/logout_button.png"):
                 auto.mouse_click(500, 500)
                 time.sleep(1)
                 auto.mouse_click(500, 500)
-                TimeUtil.wait_time(5)
+                TimeUtils.wait_time(5)
                 log.info("登录成功...")
         else:
             print("手动登录账号（暂时不确定）")

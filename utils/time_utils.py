@@ -1,11 +1,19 @@
 import time
 from log import Log
-from datetime import datetime
+from datetime import date, datetime
 
 log = Log()
 
 
-class TimeUtil:
+class TimeUtils:
+    @staticmethod
+    def get_today_weekday():
+        # 获取当前日期
+        today = date.today()
+        # 使用strftime方法获取星期几的名称
+        weekday_name = today.strftime("%A")
+        return weekday_name
+
     @staticmethod
     def wait_time(timeout, print_interval=5):
         """等待指定时间，并每隔 print_interval 秒打印剩余时间。"""

@@ -8,7 +8,7 @@ from log import log
 from config import cfg
 from ctypes import windll
 from typing import Optional
-from utils.time_utils import TimeUtil
+from utils.time_utils import TimeUtils
 from imgui.integrations.glfw import GlfwRenderer
 from utils.AESCipher import AESCipher
 from .modules.food_language import account_mg as account
@@ -49,7 +49,7 @@ def run_reward():
                 log.info("游戏启动流程完成")
                 if login.start():
                     log.info("登录启动流程完成")
-                    TimeUtil.wait_time(10)
+                    TimeUtils.wait_time(10)
                     reward.start()
                     launcher.stop_game()
 
