@@ -2,7 +2,7 @@ import threading
 from queue import Queue, PriorityQueue
 from utils.singleton import SingletonMeta
 from collections import deque
-import time
+
 
 class TasksQueue(metaclass=SingletonMeta):
     def __init__(self):
@@ -20,11 +20,15 @@ class TasksQueue(metaclass=SingletonMeta):
             # 将任务函数、参数和优先级打包成一个元组，并放入优先级队列
             self.priority_queue.put((priority, (task_func, args, kwargs)))
 
-    def add_task_fifo(self, task_func):
-        """添加任务到队列末尾"""
-        self.queue.append(task_func)  # 添加任务到队列
+    def add_task_fifo(self, task_func, task_id=None):
+        """添加任务到队列末尾，并给任务一个可选的标识"""
+        self.queue.append((task_id, task_func))
 
-    # 用于从优先级队列中取出并执行任务
+    def remove_task_fifo(self, task_id):
+        """根据任务标识从队列中移除任务"""
+        with self.queue_lock:
+            self.queue = deque(task for task in self.queue if task[0] != task_id)
+
     def process_priority_tasks(self):
         while not self.priority_queue.empty():
             with self.queue_lock:
@@ -32,18 +36,18 @@ class TasksQueue(metaclass=SingletonMeta):
                     break
                 # 从优先级队列中取出优先级最高的任务
                 priority, (task_func, args, kwargs) = self.priority_queue.get()
-            task_func(*args, **kwargs)  # 执行任务
+            task_func(*args, **kwargs)
 
     def process_fifo_tasks(self):
         """处理队列中的任务"""
         while self.queue:
-            task_func = self.queue.popleft()  # 从队列头部取出任务
-            task_func()  # 执行任务
+            task_id, task_func = self.queue.popleft()
+            task_func()
 
     def execute_tasks(self):
         """执行队列中的所有任务，包括优先级和FIFO任务."""
         # self.process_priority_tasks()
         self.process_fifo_tasks()
 
-    def is_empty(self):
-        return len(self.queue) == 0  # 或者 return not self.queue
+    def queue_len(self):
+        return len(self.queue)
