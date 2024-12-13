@@ -15,7 +15,7 @@ from .modules.food_language import account_mg as account
 from .modules.food_language import daily_task as daily
 from .modules.food_language import replica_task as replica
 from .modules.food_language import multiple_mg as multiple
-from .modules.food_language import task_queue as task
+from .modules.task_queue import task_queue as task
 from .modules.phone import home as home
 from tasks_queue import TasksQueue
 import game as game
@@ -55,7 +55,8 @@ def run_reward():
 
 
 def run_phone_reward():
-    print(tasks_queue.is_empty())
+    if tasks_queue.is_empty():
+        log.info("当前没有可执行的任务...")
     # 处理任务
     if not tasks_queue.is_empty():
         tasks_queue.process_fifo_tasks()  # 现在会执行 Hzh.run()，但不会立即

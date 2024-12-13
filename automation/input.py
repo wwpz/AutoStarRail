@@ -17,6 +17,14 @@ class Input:
         except Exception as e:
             self.logger.error(f"鼠标点击出错：{e}")
 
+    def mouse_right_click(self, x, y):
+        """在屏幕上的 (x, y) 位置执行鼠标右键点击操作"""
+        try:
+            pyautogui.click(x, y, button='right')
+            self.logger.debug(f"鼠标右键点击 ({x}, {y})")
+        except Exception as e:
+            self.logger.error(f"鼠标右键点击出错：{e}")
+
     def mouse_down(self, x, y):
         '''在屏幕上的（x，y）位置按下鼠标按钮'''
         try:

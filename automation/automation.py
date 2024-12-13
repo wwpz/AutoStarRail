@@ -37,6 +37,7 @@ class Automation(metaclass=SingletonMeta):
         """
         self.input_handler = Input(self.log)
         self.mouse_click = self.input_handler.mouse_click
+        self.mouse_right_click = self.input_handler.mouse_right_click
         self.mouse_down = self.input_handler.mouse_down
         self.mouse_up = self.input_handler.mouse_up
         self.mouse_move = self.input_handler.mouse_move
