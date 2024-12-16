@@ -3,7 +3,6 @@ from config import cfg
 from tasks_queue import TasksQueue
 from tasks.phone.hzh.hzh import Hzh
 from tasks.phone.zfb.zfb import Zfb
-from collections import OrderedDict
 
 ui_state = {
     "task": "手机签到",
@@ -22,6 +21,7 @@ zfb_instance = Zfb("支付宝")
 
 def initialize_tasks():
     task_data = cfg.load_existing_json_data(ui_state["file_path"])
+
     # 递归遍历任务字典，查找并执行状态为 True 的任务
     def traverse_and_execute(task_dict):
         if isinstance(task_dict, dict):
@@ -33,6 +33,7 @@ def initialize_tasks():
                 elif isinstance(value, dict):
                     # 递归深入子字典
                     traverse_and_execute(value)
+
     # 开始遍历任务数据
     traverse_and_execute(task_data)
 
@@ -49,34 +50,96 @@ def execute_task(task_key):
         tasks_queue.add_task_fifo(lambda: zfb_instance.start(), "zfb_signin")
 
 
-def update_node(custom_key, new_values):
-    existing_data = cfg.load_existing_json_data(ui_state['file_path'])
-    """
-    更新 existing_data 中的状态。
+# def update_node(custom_key, new_values=None, delete_key=None):
+#     try:
+#         existing_data = cfg.load_existing_json_data(ui_state['file_path'])
+#
+#         # 确保 existing_data 字典中有正确的层级结构
+#         task = ui_state.get("task")
+#         task_key = ui_state.get("task_key")
+#
+#         if task is None or task_key is None:
+#             raise ValueError("task 或 task_key 在 ui_state 中未定义")
+#
+#         if task not in existing_data:
+#             existing_data[task] = {}
+#         if task_key not in existing_data[task]:
+#             existing_data[task][task_key] = {}
+#
+#         # 使用 OrderedDict 来维护顺序
+#         custom_data = existing_data[task][task_key]
+#
+#         if custom_key not in custom_data:
+#             custom_data[custom_key] = OrderedDict()
+#
+#         # 删除指定的键
+#         if delete_key and delete_key in custom_data[custom_key]:
+#             del custom_data[custom_key][delete_key]
+#
+#         # 更新自定义键下的值
+#         if new_values is not None:
+#             for key, value in new_values.items():
+#                 if key in custom_data[custom_key]:
+#                     del custom_data[custom_key][key]  # 删除旧的条目，重新插入以保持顺序
+#                 custom_data[custom_key][key] = value
+#
+#         # 检查 custom_key 是否为空并删除
+#         if not custom_data[custom_key]:
+#             del custom_data[custom_key]
+#
+#         # 将更新后的数据保存到文件
+#         cfg.save_json(ui_state['file_path'], existing_data)
+#     except Exception as e:
+#         print(f"更新节点时发生错误: {e}")
 
-    :param custom_key: 自定义键
-    :param new_values: 要更新的键值对字典
-    """
-    # 确保 existing_data 字典中有正确的层级结构
-    if ui_state["task"] not in existing_data:
-        existing_data[ui_state["task"]] = {}
-    if ui_state["task_key"] not in existing_data[ui_state["task"]]:
-        existing_data[ui_state["task"]][ui_state["task_key"]] = {}
+def update_node(custom_key, new_values=None, delete_key=None):
+    try:
+        # 加载现有的数据
+        existing_data = cfg.load_existing_json_data(ui_state['file_path'])
 
-    # 使用 OrderedDict 来维护顺序
-    custom_data = existing_data[ui_state["task"]][ui_state["task_key"]]
+        # 确保 existing_data 字典中有正确的层级结构
+        task = ui_state.get("task")
+        task_key = ui_state.get("task_key")
 
-    if custom_key not in custom_data:
-        custom_data[custom_key] = OrderedDict()
+        if task is None or task_key is None:
+            raise ValueError("task 或 task_key 在 ui_state 中未定义")
 
-    # 更新自定义键下的值
-    for key, value in new_values.items():
-        if key in custom_data[custom_key]:
-            del custom_data[custom_key][key]  # 删除旧的条目，重新插入以保持顺序
-        custom_data[custom_key][key] = value
+        # 确保 task 和 task_key 的层级结构存在
+        if task not in existing_data:
+            existing_data[task] = {}
+        if task_key not in existing_data[task]:
+            existing_data[task][task_key] = {}
 
-    # 将更新后的数据保存到文件
-    cfg.save_json(ui_state['file_path'], existing_data)
+        # 获取或初始化自定义数据
+        custom_data = existing_data[task][task_key]
+        if custom_key not in custom_data:
+            custom_data[custom_key] = {}
+
+        # 删除指定的键
+        if delete_key and delete_key in custom_data[custom_key]:
+            del custom_data[custom_key][delete_key]
+
+        # 更新自定义键下的值
+        if new_values is not None:
+            for key, value in new_values.items():
+                custom_data[custom_key][key] = value
+
+        # 检查 custom_key 是否为空并删除
+        if not custom_data[custom_key]:
+            del custom_data[custom_key]
+
+        # 检查 task_key 是否为空并删除
+        if not existing_data[task][task_key]:
+            del existing_data[task][task_key]
+
+        # 检查 task 是否为空并删除
+        if not existing_data[task]:
+            del existing_data[task]
+
+        # 将更新后的数据保存到文件
+        cfg.save_json(ui_state['file_path'], existing_data)
+    except Exception as e:
+        print(f"更新节点时发生错误: {e}")
 
 
 initialize_tasks()
@@ -87,12 +150,12 @@ def render():
                                                         ui_state["hzh_signin"])
     if hzh_button:
         cfg.set_value("hzh_signin", ui_state["hzh_signin"])
-        # update_node("华住会", ui_state["hzh_signin"])
         update_node("华住会", {"华住会签到": ui_state["hzh_signin"]})
         if ui_state["hzh_signin"]:
             # 使用 lambda 函数将 Hzh.run 封装为可调用对象
             tasks_queue.add_task_fifo(lambda: hzh_instance.start(), "hzh_signin")
         else:
+            update_node("华住会", delete_key="华住会签到")
             tasks_queue.remove_task_fifo("hzh_signin")
 
     imgui.same_line()
@@ -102,11 +165,14 @@ def render():
         cfg.set_value("mys_starRail_signin", ui_state["mys_starRail_signin"])
         update_node("米游社", {"星铁签到": ui_state["mys_starRail_signin"]})
         # update_node("米游社-星铁签到", ui_state["mys_starRail_signin"])
-        # if ui_state["mys_starRail_signin"]:
-        #     # 使用 lambda 函数将 Hzh.run 封装为可调用对象
-        #     tasks_queue.add_task_fifo(lambda: hzh_instance.start(), "hzh_signin")
-        # else:
-        #     tasks_queue.remove_task_fifo("hzh_signin")
+        if ui_state["mys_starRail_signin"]:
+            # 使用 lambda 函数将 Hzh.run 封装为可调用对象
+            print("kok")
+            # tasks_queue.add_task_fifo(lambda: hzh_instance.start(), "hzh_signin")
+        else:
+            update_node("米游社", delete_key="星铁签到")
+            print("remove_task_fifo")
+            # tasks_queue.remove_task_fifo("hzh_signin")
 
     imgui.same_line()
     mys_Genshin_button, ui_state["mys_Genshin_signin"] = imgui.checkbox("米游社-原神签到",
@@ -114,12 +180,14 @@ def render():
     if mys_Genshin_button:
         cfg.set_value("mys_Genshin_signin", ui_state["mys_Genshin_signin"])
         update_node("米游社", {"原神签到": ui_state["mys_Genshin_signin"]})
-        # update_node("米游社-原神签到", ui_state["mys_starRail_signin"])
-        # if ui_state["mys_starRail_signin"]:
-        #     # 使用 lambda 函数将 Hzh.run 封装为可调用对象
-        #     tasks_queue.add_task_fifo(lambda: hzh_instance.start(), "hzh_signin")
-        # else:
-        #     tasks_queue.remove_task_fifo("hzh_signin")
+        if ui_state["mys_Genshin_signin"]:
+            print("kok")
+            # 使用 lambda 函数将 Hzh.run 封装为可调用对象
+            # tasks_queue.add_task_fifo(lambda: hzh_instance.start(), "hzh_signin")
+        else:
+            print("kok")
+            update_node("米游社", delete_key="原神签到")
+            # tasks_queue.remove_task_fifo("hzh_signin")
 
     zfb_button, ui_state["zfb_signin"] = imgui.checkbox("支付宝-签到",
                                                         ui_state["zfb_signin"])
@@ -129,17 +197,21 @@ def render():
         if ui_state["zfb_signin"]:
             tasks_queue.add_task_fifo(lambda: zfb_instance.start(), "zfb_signin")
         else:
+            update_node("支付宝", delete_key="支付宝签到")
             tasks_queue.remove_task_fifo("zfb_signin")
 
+    imgui.same_line()
     zfb_mysl_button, ui_state["zfb_mysl_signin"] = imgui.checkbox("支付宝-蚂蚁森林",
                                                                   ui_state["zfb_mysl_signin"])
     if zfb_mysl_button:
         cfg.set_value("zfb_mysl_signin", ui_state["zfb_mysl_signin"])
         update_node("支付宝", {"蚂蚁森林": ui_state["zfb_mysl_signin"]})
-        # if ui_state["zfb_signin"]:
-        #     tasks_queue.add_task_fifo(lambda: zfb_instance.start(), "zfb_signin")
-        # else:
-        #     tasks_queue.remove_task_fifo("zfb_signin")
+        if ui_state["zfb_signin"]:
+            print("kok")
+            # tasks_queue.add_task_fifo(lambda: zfb_instance.start(), "zfb_signin")
+        else:
+            update_node("支付宝", delete_key="蚂蚁森林")
+            tasks_queue.remove_task_fifo("zfb_signin")
 
     # imgui.same_line()
     # activity_button2, ui_state["mys_starRail_signin"] = imgui.checkbox("支付宝-蚂蚁森林",
