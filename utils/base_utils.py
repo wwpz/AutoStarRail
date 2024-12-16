@@ -1,9 +1,11 @@
 import time
 import ctypes
 import win32gui
+import pyperclip
 from log import Log
 import pygetwindow as gw
-import pyperclip
+from automation import auto
+from utils.time_utils import TimeUtils
 
 log = Log()
 
@@ -24,6 +26,13 @@ class BaseUtils:
     def copy_to_clipboard(text):
         pyperclip.copy(text)
         log.debug(f"已复制到剪切板: {text}")
+
+    @staticmethod
+    def paste(text):
+        BaseUtils.copy_to_clipboard(text)
+        if auto.find_element("./res/phone/basics/home_search.png", is_global=True):
+            auto.press_keys(['ctrl', 'v'])
+            TimeUtils.wait_(1)
 
     @staticmethod
     def get_window_center(window_title):

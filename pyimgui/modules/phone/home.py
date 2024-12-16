@@ -3,10 +3,10 @@ from config import cfg
 from tasks_queue import TasksQueue
 from tasks.phone.hzh.hzh import Hzh
 from tasks.phone.zfb.zfb import Zfb
+from utils.phone_utils import PhoneUtils
+from tasks.phone.zfb.zfb_mysl import ZfbMysl
 
 ui_state = {
-    "task": "手机签到",
-    "task_key": "每日签到",
     "hzh_signin": cfg.get_value("hzh_signin"),
     "mys_starRail_signin": cfg.get_value("mys_starRail_signin"),
     "mys_Genshin_signin": cfg.get_value("mys_Genshin_signin"),
@@ -17,6 +17,7 @@ ui_state = {
 tasks_queue = TasksQueue()
 hzh_instance = Hzh("华住会")
 zfb_instance = Zfb("支付宝")
+zfb_mysl_instance = ZfbMysl("蚂蚁森林",is_go_home=False)
 
 
 def initialize_tasks():
@@ -48,6 +49,9 @@ def execute_task(task_key):
     elif task_key == "支付宝签到":
         print("Executing zfb_signin task...")
         tasks_queue.add_task_fifo(lambda: zfb_instance.start(), "zfb_signin")
+    elif task_key == "蚂蚁森林":
+        print("Executing zfb_mysl_signin task...")
+        tasks_queue.add_task_fifo(lambda: zfb_mysl_instance.start(), "zfb_mysl_signin")
 
 
 # def update_node(custom_key, new_values=None, delete_key=None):
@@ -92,55 +96,6 @@ def execute_task(task_key):
 #     except Exception as e:
 #         print(f"更新节点时发生错误: {e}")
 
-def update_node(custom_key, new_values=None, delete_key=None):
-    try:
-        # 加载现有的数据
-        existing_data = cfg.load_existing_json_data(ui_state['file_path'])
-
-        # 确保 existing_data 字典中有正确的层级结构
-        task = ui_state.get("task")
-        task_key = ui_state.get("task_key")
-
-        if task is None or task_key is None:
-            raise ValueError("task 或 task_key 在 ui_state 中未定义")
-
-        # 确保 task 和 task_key 的层级结构存在
-        if task not in existing_data:
-            existing_data[task] = {}
-        if task_key not in existing_data[task]:
-            existing_data[task][task_key] = {}
-
-        # 获取或初始化自定义数据
-        custom_data = existing_data[task][task_key]
-        if custom_key not in custom_data:
-            custom_data[custom_key] = {}
-
-        # 删除指定的键
-        if delete_key and delete_key in custom_data[custom_key]:
-            del custom_data[custom_key][delete_key]
-
-        # 更新自定义键下的值
-        if new_values is not None:
-            for key, value in new_values.items():
-                custom_data[custom_key][key] = value
-
-        # 检查 custom_key 是否为空并删除
-        if not custom_data[custom_key]:
-            del custom_data[custom_key]
-
-        # 检查 task_key 是否为空并删除
-        if not existing_data[task][task_key]:
-            del existing_data[task][task_key]
-
-        # 检查 task 是否为空并删除
-        if not existing_data[task]:
-            del existing_data[task]
-
-        # 将更新后的数据保存到文件
-        cfg.save_json(ui_state['file_path'], existing_data)
-    except Exception as e:
-        print(f"更新节点时发生错误: {e}")
-
 
 initialize_tasks()
 
@@ -150,12 +105,12 @@ def render():
                                                         ui_state["hzh_signin"])
     if hzh_button:
         cfg.set_value("hzh_signin", ui_state["hzh_signin"])
-        update_node("华住会", {"华住会签到": ui_state["hzh_signin"]})
+        PhoneUtils.update_or_del_node("华住会", {"华住会签到": ui_state["hzh_signin"]})
         if ui_state["hzh_signin"]:
             # 使用 lambda 函数将 Hzh.run 封装为可调用对象
             tasks_queue.add_task_fifo(lambda: hzh_instance.start(), "hzh_signin")
         else:
-            update_node("华住会", delete_key="华住会签到")
+            PhoneUtils.update_or_del_node("华住会", delete_key="华住会签到")
             tasks_queue.remove_task_fifo("hzh_signin")
 
     imgui.same_line()
@@ -163,14 +118,14 @@ def render():
                                                                           ui_state["mys_starRail_signin"])
     if mys_starRail_button:
         cfg.set_value("mys_starRail_signin", ui_state["mys_starRail_signin"])
-        update_node("米游社", {"星铁签到": ui_state["mys_starRail_signin"]})
-        # update_node("米游社-星铁签到", ui_state["mys_starRail_signin"])
+        PhoneUtils.update_or_del_node("米游社", {"星铁签到": ui_state["mys_starRail_signin"]})
+        # PhoneUtils.update_or_del_node("米游社-星铁签到", ui_state["mys_starRail_signin"])
         if ui_state["mys_starRail_signin"]:
             # 使用 lambda 函数将 Hzh.run 封装为可调用对象
             print("kok")
             # tasks_queue.add_task_fifo(lambda: hzh_instance.start(), "hzh_signin")
         else:
-            update_node("米游社", delete_key="星铁签到")
+            PhoneUtils.update_or_del_node("米游社", delete_key="星铁签到")
             print("remove_task_fifo")
             # tasks_queue.remove_task_fifo("hzh_signin")
 
@@ -179,25 +134,25 @@ def render():
                                                                         ui_state["mys_Genshin_signin"])
     if mys_Genshin_button:
         cfg.set_value("mys_Genshin_signin", ui_state["mys_Genshin_signin"])
-        update_node("米游社", {"原神签到": ui_state["mys_Genshin_signin"]})
+        PhoneUtils.update_or_del_node("米游社", {"原神签到": ui_state["mys_Genshin_signin"]})
         if ui_state["mys_Genshin_signin"]:
             print("kok")
             # 使用 lambda 函数将 Hzh.run 封装为可调用对象
             # tasks_queue.add_task_fifo(lambda: hzh_instance.start(), "hzh_signin")
         else:
             print("kok")
-            update_node("米游社", delete_key="原神签到")
+            PhoneUtils.update_or_del_node("米游社", delete_key="原神签到")
             # tasks_queue.remove_task_fifo("hzh_signin")
 
     zfb_button, ui_state["zfb_signin"] = imgui.checkbox("支付宝-签到",
                                                         ui_state["zfb_signin"])
     if zfb_button:
         cfg.set_value("zfb_signin", ui_state["zfb_signin"])
-        update_node("支付宝", {"支付宝签到": ui_state["zfb_signin"]})
+        PhoneUtils.update_or_del_node("支付宝", {"支付宝签到": ui_state["zfb_signin"]})
         if ui_state["zfb_signin"]:
             tasks_queue.add_task_fifo(lambda: zfb_instance.start(), "zfb_signin")
         else:
-            update_node("支付宝", delete_key="支付宝签到")
+            PhoneUtils.update_or_del_node("支付宝", delete_key="支付宝签到")
             tasks_queue.remove_task_fifo("zfb_signin")
 
     imgui.same_line()
@@ -205,13 +160,12 @@ def render():
                                                                   ui_state["zfb_mysl_signin"])
     if zfb_mysl_button:
         cfg.set_value("zfb_mysl_signin", ui_state["zfb_mysl_signin"])
-        update_node("支付宝", {"蚂蚁森林": ui_state["zfb_mysl_signin"]})
-        if ui_state["zfb_signin"]:
-            print("kok")
-            # tasks_queue.add_task_fifo(lambda: zfb_instance.start(), "zfb_signin")
+        PhoneUtils.update_or_del_node("支付宝", {"蚂蚁森林": ui_state["zfb_mysl_signin"]})
+        if ui_state["zfb_mysl_signin"]:
+            tasks_queue.add_task_fifo(lambda: zfb_mysl_instance.start(), "zfb_mysl_signin")
         else:
-            update_node("支付宝", delete_key="蚂蚁森林")
-            tasks_queue.remove_task_fifo("zfb_signin")
+            PhoneUtils.update_or_del_node("支付宝", delete_key="蚂蚁森林")
+            tasks_queue.remove_task_fifo("zfb_mysl_signin")
 
     # imgui.same_line()
     # activity_button2, ui_state["mys_starRail_signin"] = imgui.checkbox("支付宝-蚂蚁森林",
