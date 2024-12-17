@@ -101,7 +101,7 @@ class Automation(metaclass=SingletonMeta):
         return win.left + x, win.top + y
 
     def find_element(self, target, threshold=0.9, max_retries=2, take_screenshot=True, is_save=False,
-                     screenshot_module=None,is_global=False):
+                     screenshot_module=None, is_global=False):
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         today_date = datetime.now().strftime('%Y_%m_%d')
         now_image_name = target.replace('./res/', '')
@@ -211,7 +211,7 @@ class Automation(metaclass=SingletonMeta):
         return True
 
     def click_element(self, target, threshold=0.9, max_retries=2, action="click", is_save=False,
-                      screenshot_module=None,is_global=False):
+                      screenshot_module=None, is_global=False):
         """
         查找并点击屏幕上的元素。
 
@@ -228,7 +228,55 @@ class Automation(metaclass=SingletonMeta):
         如果找到元素并点击成功，则返回True；否则返回False。
         """
         coordinates = self.find_element(target, threshold, max_retries, is_save=is_save,
-                                        screenshot_module=screenshot_module,is_global=is_global)
+                                        screenshot_module=screenshot_module, is_global=is_global)
         if coordinates:
             return self.click_element_with_pos(coordinates, action)
         return False
+
+    def mysl_click_element(self, max_retries=2, startX=None, startY=None,
+                           endX=None, endY=None):
+        max_retries = 1 if not max_retries else max_retries
+        for i in range(max_retries):
+            # 捕获游戏窗口，判断是否在游戏窗口内进行截图
+            screenshot_result = self.take_screenshot()
+            if not screenshot_result:
+                self.log.info("截图失败")
+                continue  # 如果截图失败，则跳过本次循环
+            try:
+                # 将截取的屏幕区域转换为OpenCV图像格式
+                image = cv2.cvtColor(np.array(self.screenshot), cv2.COLOR_RGB2BGR)
+                # 裁剪图像
+                cropped_image = image[startY:endY, startX:endX]
+                # 使用Canny边缘检测
+                edges = cv2.Canny(cropped_image, 200, 1200)
+                # 使用霍夫变换进行圆形检测
+                circles = cv2.HoughCircles(
+                    edges,
+                    cv2.HOUGH_GRADIENT,
+                    dp=1,
+                    minDist=30,
+                    param1=50,
+                    param2=20,
+                    minRadius=10,
+                    maxRadius=100
+                )
+                # 如果检测到圆形，则返回坐标
+                if circles is not None:
+                    circles = np.round(circles[0, :]).astype("int")
+                    for (x, y, r) in circles:
+                        circle_center = (x, y)
+                        if circle_center:
+                            global_x, global_y = self.convert_to_global(x, y)
+                            self.mouse_click(global_x, global_y + startY)
+                            # 保存领取成功后的截图
+                            # self.log.debug(f"本次保存的奖励图片为------：" + "蚂蚁森林领取能量")
+                            # cv2.imwrite(
+                            #     os.path.join(f'./res/reward_images/{cfg.game_type}/{cfg.user_account}/{today_date}',
+                            #                  f'{screenshot_module}_{timestamp}.jpg'), screenshot)
+                            time.sleep(3)
+                            return True
+            except Exception as e:
+                self.log.debug(f"寻找图片出错：{e}")
+            if i < max_retries - 1:
+                time.sleep(1)  # 在重试前等待一定时间
+        return None

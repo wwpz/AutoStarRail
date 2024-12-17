@@ -31,10 +31,6 @@ class Zfb:
                 TimeUtils.wait_time(10)
             self._has_run_once = True  # 设置标志为 True，表示方法已经执行过
 
-    # def receive_award(self):
-    #     while True:
-
-
     def signin(self):
         self.run_once()
         if auto.click_element("./res/phone/zfb/home_me.png", is_global=True):
@@ -45,17 +41,30 @@ class Zfb:
                     TimeUtils.wait_(3)
                     if auto.click_element("./res/phone/zfb/close.png", is_global=True):
                         TimeUtils.wait_(3)
-                    PhoneUtils.update_or_del_node("支付宝", delete_key="支付宝签到")
                     for i in range(2):
                         auto.mouse_right_click(self.x, self.y)
                         TimeUtils.wait_(2)
+        PhoneUtils.update_or_del_node("支付宝", delete_key="支付宝签到")
 
     def mysl(self):
         self.run_once()
         if auto.click_element("./res/phone/zfb/home_icon.png", is_global=True) or auto.click_element(
                 "./res/phone/zfb/home_icon2.png", is_global=True):
-            TimeUtils.wait_(3)
+            TimeUtils.wait_time(5)
             if auto.click_element("./res/phone/zfb/mysl.png", is_global=True):
                 TimeUtils.wait_time(10)
-                if auto.click_element("./res/phone/zfb/mysl_close.png", is_global=True):
+                # if auto.click_element("./res/phone/zfb/mysl_close.png", is_global=True):
+                #     TimeUtils.wait_(3)
+                auto.mysl_click_element(startX=0, startY=140, endX=2000, endY=280)
+                TimeUtils.wait_(3)
+                while auto.click_element("./res/phone/zfb/mysl_find_power.png", is_global=True):
                     TimeUtils.wait_(3)
+                    if auto.click_element("./res/phone/zfb/mysl_receive_award.png", is_global=True):
+                        TimeUtils.wait_(3)
+                if auto.click_element("./res/phone/zfb/back_to_home.png", is_global=True):
+                    TimeUtils.wait_time(10)
+                    if auto.click_element("./res/phone/zfb/reward.png", is_global=True):
+                        TimeUtils.wait_(3)
+                        # while auto.click_element("./res/phone/zfb/receive.png", is_global=True):
+                        #     TimeUtils.wait_(3)
+        PhoneUtils.update_or_del_node("支付宝", delete_key="蚂蚁森林")

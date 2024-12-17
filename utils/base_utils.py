@@ -30,7 +30,7 @@ class BaseUtils:
     @staticmethod
     def paste(text):
         BaseUtils.copy_to_clipboard(text)
-        if auto.find_element("./res/phone/basics/home_search.png", is_global=True):
+        if auto.find_element("./res/phone/basics/home_search1.png", is_global=True):
             auto.press_keys(['ctrl', 'v'])
             TimeUtils.wait_(1)
 
@@ -54,6 +54,20 @@ class BaseUtils:
             return center_x, center_y
         except IndexError:
             return None  # 没有找到窗口
+
+    @staticmethod
+    def get_window_borders():
+        window_title = auto.window_title
+        window = gw.getWindowsWithTitle(window_title)
+        if window:
+            win = window[0]
+            left = win.left
+            top = win.top
+            right = win.left + win.width
+            bottom = win.top + win.height
+            return left, top, right, bottom
+        else:
+            raise Exception(f"Window with title '{window_title}' not found.")
 
     @staticmethod
     def get_window_class_from_title(window_title):

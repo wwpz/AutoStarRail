@@ -6,13 +6,18 @@ from utils.base_utils import BaseUtils
 
 params = {
     "x": None,
-    "y": None
+    "y": None,
+    "left": None,
+    "top": None,
+    "right": None,
+    "bottom": None,
 }
 ui_state = {
     "task": "手机签到",
     "task_key": "每日签到",
     "file_path": "./res/config/task_queue.json"
 }
+params["left"], params["top"], params["right"], params["bottom"] = BaseUtils.get_window_borders()
 
 
 class PhoneUtils:
@@ -38,16 +43,15 @@ class PhoneUtils:
 
     @staticmethod
     def open_search():
-        auto.mouse_move(params["x"], params["y"] + 200)
-        TimeUtils.wait_(1)
-        auto.mouse_dragRel(0, -150, 0.1)
-        TimeUtils.wait_(1)
+        if auto.click_element("./res/phone/basics/home_search.png", is_global=True):
+            TimeUtils.wait_(1)
 
     @staticmethod
     def clear_background():
-        auto.mouse_move(params["x"], params["y"] + 430)
         TimeUtils.wait_(1)
-        auto.mouse_dragRel(0, -900, 0.5)
+        auto.mouse_move(params["x"], params["bottom"] - 15)
+        TimeUtils.wait_(1)
+        auto.mouse_dragRel(0, -600, 0.8)
         if auto.click_element("./res/phone/basics/clear.png", is_global=True):
             TimeUtils.wait_(2)
         else:
