@@ -37,11 +37,6 @@ class PhoneUtils:
                 log.debug("在首页")
 
     @staticmethod
-    def open_search():
-        if auto.click_element("./res/phone/basics/home_search.png", is_global=True):
-            TimeUtils.wait_(1)
-
-    @staticmethod
     def clear_background():
         TimeUtils.wait_(1)
         auto.mouse_move(params["center_x"], params["bottom"] - 15)
@@ -51,6 +46,11 @@ class PhoneUtils:
             TimeUtils.wait_(2)
         else:
             auto.mouse_middle(params["center_x"], params["center_y"])
+
+    @staticmethod
+    def open_search():
+        if auto.click_element("./res/phone/basics/home_search.png", is_global=True):
+            TimeUtils.wait_(1)
 
     @staticmethod
     def update_or_del_node(custom_key, new_values=None, delete_key=None):
