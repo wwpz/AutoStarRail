@@ -3,6 +3,7 @@ from config import cfg
 from tasks_queue import TasksQueue
 from tasks.phone.hzh.hzh import Hzh
 from tasks.phone.zfb.zfb import Zfb
+from tasks.phone.xmsc.xmsc import Xmsc
 from utils.phone_utils import PhoneUtils
 
 ui_state = {
@@ -11,12 +12,16 @@ ui_state = {
     "mys_Genshin_signin": cfg.get_value("mys_Genshin_signin"),
     "zfb_signin": cfg.get_value("zfb_signin"),
     "zfb_mysl_signin": cfg.get_value("zfb_mysl_signin"),
+    "zfb_myzy_signin": cfg.get_value("zfb_myzy_signin"),
+    "zfb_bbnc_signin": cfg.get_value("zfb_bbnc_signin"),
+    "xmsc_signin": cfg.get_value("xmsc_signin"),
     "file_path": "./res/config/task_queue.json"
 }
 
 tasks_queue = TasksQueue()
 hzh_instance = Hzh("华住会")
 zfb_instance = Zfb("支付宝")
+xmsc_instance = Xmsc("小米商城")
 
 
 def initialize_tasks():
@@ -112,7 +117,7 @@ def render():
             PhoneUtils.update_or_del_node("华住会", delete_key="华住会签到")
             tasks_queue.remove_task_fifo("hzh_signin")
 
-    imgui.same_line()
+    # imgui.same_line()
     # mys_starRail_button, ui_state["mys_starRail_signin"] = imgui.checkbox("米游社-星铁签到",
     #                                                                       ui_state["mys_starRail_signin"])
     # if mys_starRail_button:
@@ -166,25 +171,36 @@ def render():
             PhoneUtils.update_or_del_node("支付宝", delete_key="蚂蚁森林")
             tasks_queue.remove_task_fifo("zfb_mysl_signin")
 
-    # imgui.same_line()
-    # activity_button2, ui_state["mys_starRail_signin"] = imgui.checkbox("支付宝-蚂蚁森林",
-    #                                                                    ui_state["mys_starRail_signin"])
-    # if ui_state["mys_starRail_signin"]:
-    #     print(ui_state["mys_starRail_signin"])
-    #     # 使用 lambda 函数将 Hzh.run 封装为可调用对象
-    #     # tasks_queue.add_task_fifo(lambda: mail_instance.run())
-    #
-    # imgui.same_line()
-    # activity_button2, ui_state["mys_starRail_signin"] = imgui.checkbox("支付宝-蚂蚁庄园",
-    #                                                                    ui_state["mys_starRail_signin"])
-    # if ui_state["mys_starRail_signin"]:
-    #     print(ui_state["mys_starRail_signin"])
-    #     # 使用 lambda 函数将 Hzh.run 封装为可调用对象
-    #     # tasks_queue.add_task_fifo(lambda: mail_instance.run())
-    #
-    # activity_button2, ui_state["mys_starRail_signin"] = imgui.checkbox("支付宝-芭芭农场",
-    #                                                                    ui_state["mys_starRail_signin"])
-    # if ui_state["mys_starRail_signin"]:
-    #     print(ui_state["mys_starRail_signin"])
-    #     # 使用 lambda 函数将 Hzh.run 封装为可调用对象
-    #     # tasks_queue.add_task_fifo(lambda: mail_instance.run())
+    imgui.same_line()
+    zfb_myzy_button, ui_state["zfb_myzy_signin"] = imgui.checkbox("支付宝-蚂蚁庄园",
+                                                                  ui_state["zfb_myzy_signin"])
+    if zfb_myzy_button:
+        cfg.set_value("zfb_myzy_signin", ui_state["zfb_myzy_signin"])
+        PhoneUtils.update_or_del_node("支付宝", {"蚂蚁庄园": ui_state["zfb_myzy_signin"]})
+        if ui_state["zfb_myzy_signin"]:
+            tasks_queue.add_task_fifo(lambda: zfb_instance.start("蚂蚁庄园"), "zfb_myzy_signin")
+        else:
+            PhoneUtils.update_or_del_node("支付宝", delete_key="蚂蚁庄园")
+            tasks_queue.remove_task_fifo("zfb_myzy_signin")
+
+    zfb_bbnc_button, ui_state["zfb_bbnc_signin"] = imgui.checkbox("支付宝-芭芭农场",
+                                                                  ui_state["zfb_bbnc_signin"])
+    if zfb_bbnc_button:
+        cfg.set_value("zfb_bbnc_signin", ui_state["zfb_bbnc_signin"])
+        PhoneUtils.update_or_del_node("支付宝", {"芭芭农场": ui_state["zfb_bbnc_signin"]})
+        if ui_state["zfb_bbnc_signin"]:
+            tasks_queue.add_task_fifo(lambda: zfb_instance.start("芭芭农场"), "zfb_bbnc_signin")
+        else:
+            PhoneUtils.update_or_del_node("支付宝", delete_key="芭芭农场")
+            tasks_queue.remove_task_fifo("zfb_bbnc_signin")
+
+    xmsc_button, ui_state["xmsc_signin"] = imgui.checkbox("小米商城-签到",
+                                                          ui_state["xmsc_signin"])
+    if xmsc_button:
+        cfg.set_value("xmsc_signin", ui_state["xmsc_signin"])
+        PhoneUtils.update_or_del_node("小米商城", {"小米商城签到": ui_state["xmsc_signin"]})
+        if ui_state["xmsc_signin"]:
+            tasks_queue.add_task_fifo(lambda: xmsc_instance.start(), "xmsc_signin")
+        else:
+            PhoneUtils.update_or_del_node("小米商城", delete_key="小米商城签到")
+            tasks_queue.remove_task_fifo("xmsc_signin")
