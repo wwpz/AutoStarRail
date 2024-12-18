@@ -5,8 +5,8 @@ from utils.time_utils import TimeUtils
 from utils.base_utils import BaseUtils
 
 params = {
-    "x": None,
-    "y": None,
+    "center_x ": None,
+    "center_y": None,
     "left": None,
     "top": None,
     "right": None,
@@ -17,29 +17,24 @@ ui_state = {
     "task_key": "每日签到",
     "file_path": "./res/config/task_queue.json"
 }
-params["left"], params["top"], params["right"], params["bottom"] = BaseUtils.get_window_borders()
 
 
 class PhoneUtils:
 
     @staticmethod
     def go_home():
+        params["left"], params["top"], params["right"], params["bottom"] = BaseUtils.get_window_borders()
+        params["center_x"] = params["left"] + (params["right"] - params["left"]) // 2
+        params["center_y"] = params["top"] + (params["bottom"] - params["top"]) // 2
         title = auto.window_title
         window_class = BaseUtils.get_window_class_from_title(title)
-        center = BaseUtils.get_window_center(title)
-        if center:
-            params["x"], params["y"] = center
-            log.debug(f"窗口 '{title}' 的中心点坐标: x={params["x"]}, y={params["y"]}")
-        else:
-            log.debug(f"未找到标题为 '{title}' 的窗口")
 
         for i in range(3):
             if BaseUtils.switch_to_game(window_class, title):
-                auto.mouse_middle(params["x"], params["y"])
+                auto.mouse_middle(params["center_x"], params["center_y"])
                 TimeUtils.wait_(1)
             if auto.find_element("./res/phone/basics/home_setting.png"):
                 log.debug("在首页")
-                return center
 
     @staticmethod
     def open_search():
@@ -49,13 +44,13 @@ class PhoneUtils:
     @staticmethod
     def clear_background():
         TimeUtils.wait_(1)
-        auto.mouse_move(params["x"], params["bottom"] - 15)
+        auto.mouse_move(params["center_x"], params["bottom"] - 15)
         TimeUtils.wait_(1)
         auto.mouse_dragRel(0, -600, 0.8)
         if auto.click_element("./res/phone/basics/clear.png", is_global=True):
             TimeUtils.wait_(2)
         else:
-            auto.mouse_middle(params["x"], params["y"])
+            auto.mouse_middle(params["center_x"], params["center_y"])
 
     @staticmethod
     def update_or_del_node(custom_key, new_values=None, delete_key=None):

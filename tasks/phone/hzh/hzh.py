@@ -1,16 +1,14 @@
 from automation import auto
 from datetime import datetime
 from utils.base_utils import BaseUtils
+from utils.phone_utils import PhoneUtils
 from utils.time_utils import TimeUtils
 from tasks.phone.phone_template import PhoneTemplate
 
 
 class Hzh(PhoneTemplate):
     def run(self):
-        BaseUtils.copy_to_clipboard("华住会")
-        if auto.find_element("./res/phone/basics/home_search.png", is_global=True):
-            auto.press_keys(['ctrl', 'v'])
-            TimeUtils.wait_(1)
+        BaseUtils.paste("华住会")
         if auto.click_element("./res/phone/hzh/icon.png", is_global=True):
             TimeUtils.wait_time(10)
             if auto.click_element("./res/phone/hzh/close.png", is_global=True):
@@ -24,10 +22,13 @@ class Hzh(PhoneTemplate):
                     TimeUtils.wait_(1)
                 if auto.click_element("./res/phone/hzh/signin.png", is_global=True) or auto.click_element(
                         "./res/phone/hzh/signin2.png", is_global=True):
-                    TimeUtils.wait_(2)
-                    auto.mouse_move(1367, 963)
+                    TimeUtils.wait_time(5)
+                    auto.mouse_move(self.center_x, self.bottom - 15)
+                    auto.click_element("./res/phone/hzh/signed_close.png", is_global=True)
+                    TimeUtils.wait_time(3)
                     if auto.click_element("./res/phone/hzh/signin_true.png", is_global=True,
                                           is_save=True) or auto.click_element("./res/phone/hzh/signed_in.png",
                                                                               is_global=True, is_save=True):
                         today_date = datetime.now().strftime('%Y_%m_%d')
                         self.log.info(f"{today_date}----华住会签到成功")
+                    PhoneUtils.update_or_del_node("华住会", delete_key="华住会签到")

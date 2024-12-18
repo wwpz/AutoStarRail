@@ -1,6 +1,6 @@
-import pyautogui
 import time
-
+import random
+import pyautogui
 
 class Input:
     # 禁用pyautogui的失败安全特性，防止意外中断
@@ -12,6 +12,20 @@ class Input:
     def mouse_click(self, x, y):
         '''在屏幕上的（x，y）位置执行鼠标点击操作'''
         try:
+            # 生成 0.5 到 1.2 之间的随机浮点数
+            random_float = random.uniform(0.5, 1.2)
+            pyautogui.moveTo(x, y, random_float)
+            pyautogui.click(x, y)
+            self.logger.debug(f"鼠标点击 ({x}, {y})")
+        except Exception as e:
+            self.logger.error(f"鼠标点击出错：{e}")
+
+    def mouse_move_click(self, x, y):
+        '''先在屏幕上的（x，y）位置移动后，执行鼠标点击操作'''
+        try:
+            # 生成 0.5 到 1.2 之间的随机浮点数
+            random_float = random.uniform(0.5, 1.2)
+            pyautogui.moveTo(x, y, random_float)
             pyautogui.click(x, y)
             self.logger.debug(f"鼠标点击 ({x}, {y})")
         except Exception as e:
