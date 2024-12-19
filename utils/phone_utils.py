@@ -35,6 +35,7 @@ class PhoneUtils:
                 TimeUtils.wait_(1)
             if auto.find_element("./res/phone/basics/home_setting.png"):
                 log.debug("在首页")
+                break
 
     @staticmethod
     def clear_background():

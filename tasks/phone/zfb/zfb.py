@@ -64,8 +64,9 @@ class Zfb:
         self.init()
         if auto.click_element("./res/phone/zfb/mysl.png", is_global=True):
             TimeUtils.wait_time(10)
-            # if auto.click_element("./res/phone/zfb/mysl_close.png", is_global=True):
-            #     TimeUtils.wait_(3)
+            if auto.click_element("./res/phone/zfb/mysl_close.png", is_global=True) or auto.click_element(
+                    "./res/phone/zfb/mysl_close2.png", is_global=True):
+                TimeUtils.wait_(3)
             auto.mysl_click_element(startX=0, startY=140, endX=2000, endY=280)
             TimeUtils.wait_(3)
             while auto.click_element("./res/phone/zfb/mysl_find_power.png", is_global=True):
@@ -84,6 +85,13 @@ class Zfb:
         self.init()
         if auto.click_element("./res/phone/zfb/myzy.png", is_global=True):
             TimeUtils.wait_time(10)
+        if auto.click_element("./res/phone/zfb/myzy_close.png", is_global=True) or auto.click_element(
+                "./res/phone/zfb/myzy_close2.png", is_global=True):
+            TimeUtils.wait_time(10)
+        if auto.click_element("./res/phone/zfb/myzy_thief_chicken.png", is_global=True):
+            TimeUtils.wait_time(3)
+            if auto.click_element("./res/phone/zfb/myzy_drive_away.png", is_global=True):
+                TimeUtils.wait_time(3)
         if auto.click_element("./res/phone/zfb/myzy_get_feed.png", is_global=True):
             TimeUtils.wait_time(3)
             if auto.click_element("./res/phone/zfb/myzy_get.png", is_global=True):
@@ -96,8 +104,22 @@ class Zfb:
                 TimeUtils.wait_(5)
         if auto.click_element("./res/phone/zfb/myzy_feed.png", is_global=True):
             TimeUtils.wait_time(3)
+        if auto.click_element("./res/phone/zfb/myzy_home.png", is_global=True):
+            TimeUtils.wait_time(5)
+            if auto.click_element("./res/phone/zfb/myzy_home_signin.png", is_global=True):
+                TimeUtils.wait_time(5)
+            if auto.click_element("./res/phone/zfb/myzy_home_back.png", is_global=True):
+                TimeUtils.wait_time(5)
+        if auto.click_element("./res/phone/zfb/myzy_back.png", is_global=True):
+            TimeUtils.wait_time(3)
 
     def bbnc(self):
         self.init()
         if auto.click_element("./res/phone/zfb/bbnc.png", is_global=True):
             TimeUtils.wait_time(10)
+            if auto.click_element("./res/phone/zfb/bbnc_get_apply_fertilizer.png", is_global=True):
+                TimeUtils.wait_time(5)
+                while auto.click_element("./res/phone/zfb/bbnc_apply_fertilizer_receive.png", is_global=True):
+                    TimeUtils.wait_time(5)
+                if auto.click_element("./res/phone/zfb/bbnc_apply_fertilizer_close.png", is_global=True):
+                    TimeUtils.wait_time(5)
