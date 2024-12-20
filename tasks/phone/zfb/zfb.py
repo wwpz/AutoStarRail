@@ -73,12 +73,14 @@ class Zfb:
                 TimeUtils.wait_(3)
                 if auto.click_element("./res/phone/zfb/mysl_receive_award.png", is_global=True):
                     TimeUtils.wait_(3)
-            if auto.click_element("./res/phone/zfb/back_to_home.png", is_global=True):
+            if auto.click_element("./res/phone/zfb/mysl_back_to_home.png", is_global=True):
                 TimeUtils.wait_time(10)
-                if auto.click_element("./res/phone/zfb/reward.png", is_global=True):
+                if auto.click_element("./res/phone/zfb/mysl_reward.png", is_global=True):
                     TimeUtils.wait_(3)
-                    # while auto.click_element("./res/phone/zfb/receive.png", is_global=True):
-                    #     TimeUtils.wait_(3)
+                    if auto.click_element("./res/phone/zfb/mysl_receive.png", is_global=True):
+                        TimeUtils.wait_(3)
+            if auto.click_element("./res/phone/zfb/mysl_back.png", is_global=True):
+                TimeUtils.wait_time(5)
         PhoneUtils.update_or_del_node("支付宝", delete_key="蚂蚁森林")
 
     def myzy(self):
@@ -112,6 +114,7 @@ class Zfb:
                 TimeUtils.wait_time(5)
         if auto.click_element("./res/phone/zfb/myzy_back.png", is_global=True):
             TimeUtils.wait_time(3)
+        PhoneUtils.update_or_del_node("支付宝", delete_key="蚂蚁庄园")
 
     def bbnc(self):
         self.init()
@@ -123,3 +126,6 @@ class Zfb:
                     TimeUtils.wait_time(5)
                 if auto.click_element("./res/phone/zfb/bbnc_apply_fertilizer_close.png", is_global=True):
                     TimeUtils.wait_time(5)
+            if auto.click_element("./res/phone/zfb/bbnc_back.png", is_global=True):
+                TimeUtils.wait_time(5)
+        PhoneUtils.update_or_del_node("支付宝", delete_key="芭芭农场")

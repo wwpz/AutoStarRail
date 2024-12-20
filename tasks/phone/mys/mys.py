@@ -37,7 +37,7 @@ class Mys:
         # self._has_run_once = True  # 设置标志为 True，表示方法已经执行过
 
     def signin(self):
-        for i in range(2):
+        for i in range(1):
             self.count = i
             self.run_once()
             if auto.click_element("./res/phone/mys/mys_home_click.png", is_global=True):
