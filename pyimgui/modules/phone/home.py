@@ -7,6 +7,7 @@ from tasks.phone.mys.mys import Mys
 from tasks.phone.xmsc.xmsc import Xmsc
 from utils.phone_utils import PhoneUtils
 
+# 初始化 ui_state
 ui_state = {
     "hzh_signin": cfg.get_value("hzh_signin"),
     "mys_starRail_signin": cfg.get_value("mys_starRail_signin"),
@@ -16,6 +17,7 @@ ui_state = {
     "zfb_myzy_signin": cfg.get_value("zfb_myzy_signin"),
     "zfb_bbnc_signin": cfg.get_value("zfb_bbnc_signin"),
     "xmsc_signin": cfg.get_value("xmsc_signin"),
+    "all_state": False,
     "file_path": "./res/config/task_queue.json"
 }
 
@@ -24,6 +26,57 @@ hzh_instance = Hzh("华住会")
 zfb_instance = Zfb("支付宝")
 mys_instance = Mys("米游社")
 xmsc_instance = Xmsc("小米商城")
+
+# 任务映射
+tasks_mapping = {
+    "hzh_signin": (hzh_instance, "华住会"),
+    "xmsc_signin": (xmsc_instance, "小米商城"),
+    "mys_starRail_signin": (mys_instance, "星铁签到"),
+    "zfb_signin": (zfb_instance, "支付宝签到"),
+    "zfb_mysl_signin": (zfb_instance, "蚂蚁森林"),
+    "zfb_myzy_signin": (zfb_instance, "蚂蚁庄园"),
+    "zfb_bbnc_signin": (zfb_instance, "芭芭农场")
+}
+
+
+# 通用更新函数
+def update_signin(key):
+    instance, display_name = tasks_mapping[key]
+    ui_state[key] = ui_state["all_state"]
+    cfg.set_value(key, ui_state[key])
+
+    if ui_state[key]:
+        # 更新支付宝相关的节点
+        if instance.__class__.__name__ == "Zfb":
+            PhoneUtils.update_or_del_node("支付宝", {display_name: ui_state[key]})
+            # 根据任务映射添加相应的任务
+            if key == "zfb_signin":
+                tasks_queue.add_task_fifo(lambda: zfb_instance.start("支付宝签到"), "zfb_signin")
+            elif key == "zfb_mysl_signin":
+                tasks_queue.add_task_fifo(lambda: zfb_instance.start("蚂蚁森林"), "zfb_mysl_signin")
+            elif key == "zfb_myzy_signin":
+                tasks_queue.add_task_fifo(lambda: zfb_instance.start("蚂蚁庄园"), "zfb_myzy_signin")
+            elif key == "zfb_bbnc_signin":
+                tasks_queue.add_task_fifo(lambda: zfb_instance.start("芭芭农场"), "zfb_bbnc_signin")
+        else:
+            PhoneUtils.update_or_del_node(display_name, {display_name: ui_state[key]})
+            tasks_queue.add_task_fifo(lambda: instance.start(), key)
+    else:
+        # 更新支付宝相关的节点
+        if instance.__class__.__name__ == "Zfb":
+            PhoneUtils.update_or_del_node("支付宝", delete_key=display_name)
+            # 根据任务映射添加相应的任务
+            if key == "zfb_signin":
+                tasks_queue.remove_task_fifo("zfb_signin")
+            elif key == "zfb_mysl_signin":
+                tasks_queue.remove_task_fifo("zfb_mysl_signin")
+            elif key == "zfb_myzy_signin":
+                tasks_queue.remove_task_fifo("zfb_myzy_signin")
+            elif key == "zfb_bbnc_signin":
+                tasks_queue.remove_task_fifo("zfb_bbnc_signin")
+        else:
+            PhoneUtils.update_or_del_node(display_name, delete_key=display_name)
+            tasks_queue.remove_task_fifo(key)
 
 
 def initialize_tasks():
@@ -36,7 +89,6 @@ def initialize_tasks():
                 if isinstance(value, bool) and value is True:
                     # 直接执行任务，当状态为 True
                     execute_task(key)
-                    print(key)
                 elif isinstance(value, dict):
                     # 递归深入子字典
                     traverse_and_execute(value)
@@ -47,17 +99,18 @@ def initialize_tasks():
 
 def execute_task(task_key):
     # 根据 task_key 执行不同的任务操作
-    if task_key == "mys_starRail_signin":
-        print("Executing mys_starRail_signin task...")
-    elif task_key == "华住会签到":
-        print("Executing hzh_signin task...")
+    if task_key == "华住会":
         tasks_queue.add_task_fifo(lambda: hzh_instance.start(), "hzh_signin")
+    if task_key == "小米商城":
+        tasks_queue.add_task_fifo(lambda: xmsc_instance.start(), "xmsc_signin")
+    elif task_key == "星铁签到":
+        tasks_queue.add_task_fifo(lambda: mys_instance.start("星铁签到"), "mys_starRail_signin")
     elif task_key == "支付宝签到":
-        print("Executing zfb_signin task...")
         tasks_queue.add_task_fifo(lambda: zfb_instance.start("支付宝签到"), "zfb_signin")
     elif task_key == "蚂蚁森林":
-        print("Executing zfb_mysl_signin task...")
         tasks_queue.add_task_fifo(lambda: zfb_instance.start("蚂蚁森林"), "zfb_mysl_signin")
+    elif task_key == "芭芭农场":
+        tasks_queue.add_task_fifo(lambda: zfb_instance.start("芭芭农场"), "zfb_bbnc_signin")
 
 
 # def update_node(custom_key, new_values=None, delete_key=None):
@@ -107,6 +160,13 @@ initialize_tasks()
 
 
 def render():
+    # 全选复选框
+    all_button, ui_state["all_state"] = imgui.checkbox("全选", ui_state["all_state"])
+    # 更新全选状态
+    if all_button:
+        for key in tasks_mapping.keys():
+            update_signin(key)
+
     hzh_button, ui_state["hzh_signin"] = imgui.checkbox("华住会-签到",
                                                         ui_state["hzh_signin"])
     if hzh_button:
@@ -131,7 +191,7 @@ def render():
             tasks_queue.remove_task_fifo("xmsc_signin")
 
     mys_starRail_button, ui_state["mys_starRail_signin"] = imgui.checkbox("米游社-星铁签到",
-                                                        ui_state["mys_starRail_signin"])
+                                                                          ui_state["mys_starRail_signin"])
     if mys_starRail_button:
         cfg.set_value("mys_starRail_signin", ui_state["mys_starRail_signin"])
         PhoneUtils.update_or_del_node("米游社", {"星铁签到": ui_state["mys_starRail_signin"]})
