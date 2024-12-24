@@ -15,13 +15,17 @@ class Xmsc(PhoneTemplate):
             TimeUtils.wait_time(15)
             if auto.click_element("./res/phone/xmsc/close.png", is_global=True):
                 TimeUtils.wait_time(5)
+            if auto.click_element("./res/phone/xmsc/update_no.png", is_global=True):
+                TimeUtils.wait_time(5)
             if auto.click_element("./res/phone/xmsc/home_me.png", is_global=True):
                 TimeUtils.wait_time(5)
+                if auto.click_element("./res/phone/xmsc/update_no.png", is_global=True):
+                    TimeUtils.wait_time(5)
                 if auto.click_element("./res/phone/xmsc/gold.png", is_global=True):
                     TimeUtils.wait_time(5)
                 while True:
                     i += 1
-                    if auto.click_element("./res/phone/xmsc/go_signin.png", is_global=True):
+                    if auto.click_element("./res/phone/xmsc/go_signin.png", is_global=True) or auto.click_element("./res/phone/xmsc/go_signin1.png", is_global=True):
                         TimeUtils.wait_time(5)
                         if auto.click_element("./res/phone/xmsc/signin.png", is_global=True):
                             today_date = datetime.now().strftime('%Y_%m_%d')

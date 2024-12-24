@@ -144,15 +144,6 @@ class PyImgui:
         with imgui.begin_child("LeftSide", 490, -18, True):
             with imgui.begin_tab_bar("TabBar"):
                 with imgui.font(self.new_font):
-                    with imgui.begin_main_menu_bar() as main_menu_bar:
-                        if main_menu_bar.opened:
-                            # first menu dropdown
-                            with imgui.begin_menu('设置', True) as file_menu:
-                                if file_menu.opened:
-                                    # submenu
-                                    with imgui.begin_menu('当前运行的', True) as open_recent_menu:
-                                        if open_recent_menu.opened:
-                                            imgui.menu_item('doc.txt', None, False, True)
                     # if imgui.begin_tab_item("游戏选项").selected:
                     #     changed1, ui_state["game_radio1"] = imgui.checkbox("重返未来:1999", ui_state["game_radio1"])
                     #     changed2, ui_state["game_radio2"] = imgui.checkbox("食物语", ui_state["game_radio2"])
@@ -194,6 +185,11 @@ class PyImgui:
                                 imgui.text_wrapped(log_message)
                             # 自动滚动到最底部
                             imgui.set_scroll_here_y(1.0)
+                        imgui.end_tab_item()
+                    if imgui.begin_tab_item("设置").selected:
+                        expanded, visible = imgui.collapsing_header("当前签到", None)
+                        if expanded:
+                            imgui.text("任务队列")
                         imgui.end_tab_item()
 
         # 检查鼠标是否在 ImGui 窗口内
