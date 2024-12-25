@@ -33,7 +33,8 @@ class Xmsc(PhoneTemplate):
                             TimeUtils.wait_time(5)
                         if auto.click_element("./res/phone/xmsc/go_browse.png", is_global=True):
                             for i in range(3):
-                                auto.mouse_move(self.center_x, self.bottom - 100)
+                                TimeUtils.wait_time(5)
+                                auto.mouse_move(self.center_x, self.bottom - 200)
                                 random_float = random.uniform(250, 450)
                                 auto.mouse_dragRel(0, -random_float, 0.8)
                                 TimeUtils.wait_time(5)

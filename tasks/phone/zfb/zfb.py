@@ -47,11 +47,13 @@ class Zfb:
 
     def signin(self):
         self.init()
-        if auto.click_element("./res/phone/zfb/home_me.png", is_global=True):
+        if auto.click_element("./res/phone/zfb/zfb_home_me.png", is_global=True):
             TimeUtils.wait_(3)
             if auto.click_element("./res/phone/zfb/zfb_member.png", is_global=True):
                 TimeUtils.wait_(3)
-                if auto.click_element("./res/phone/zfb/signin.png", is_global=True):
+                if auto.click_element("./res/phone/zfb/zfb_all_receive.png", is_global=True):
+                    TimeUtils.wait_time(5)
+                if auto.click_element("./res/phone/zfb/zfb_signin.png", is_global=True):
                     TimeUtils.wait_(3)
                     # if auto.click_element("./res/phone/zfb/close.png", is_global=True):
                     #     TimeUtils.wait_(3)
@@ -67,6 +69,9 @@ class Zfb:
             if auto.click_element("./res/phone/zfb/mysl_close.png", is_global=True) or auto.click_element(
                     "./res/phone/zfb/mysl_close2.png", is_global=True):
                 TimeUtils.wait_(3)
+            if auto.click_element("./res/phone/zfb/mysl_close2.png", is_global=True) or auto.click_element(
+                    "./res/phone/zfb/mysl_close.png", is_global=True):
+                TimeUtils.wait_(3)
             auto.mysl_click_element(startX=0, startY=140, endX=2000, endY=280)
             TimeUtils.wait_(3)
             while auto.click_element("./res/phone/zfb/mysl_find_power.png", is_global=True):
@@ -75,10 +80,13 @@ class Zfb:
                     TimeUtils.wait_(3)
             if auto.click_element("./res/phone/zfb/mysl_back_to_home.png", is_global=True):
                 TimeUtils.wait_time(10)
+                auto.mysl_click_element(startX=0, startY=140, endX=2000, endY=280)
                 if auto.click_element("./res/phone/zfb/mysl_reward.png", is_global=True):
                     TimeUtils.wait_(3)
                     if auto.click_element("./res/phone/zfb/mysl_receive.png", is_global=True):
                         TimeUtils.wait_(3)
+                        if auto.click_element("./res/phone/zfb/mysl_receive_back.png", is_global=True):
+                            TimeUtils.wait_(3)
             if auto.click_element("./res/phone/zfb/mysl_back.png", is_global=True):
                 TimeUtils.wait_time(5)
         PhoneUtils.update_or_del_node("支付宝", delete_key="蚂蚁森林")
@@ -124,6 +132,8 @@ class Zfb:
                 TimeUtils.wait_time(5)
                 while auto.click_element("./res/phone/zfb/bbnc_apply_fertilizer_receive.png", is_global=True):
                     TimeUtils.wait_time(5)
+                    if auto.click_element("./res/phone/zfb/bbnc_isee.png", is_global=True):
+                        TimeUtils.wait_time(5)
                 if auto.click_element("./res/phone/zfb/bbnc_apply_fertilizer_close.png", is_global=True):
                     TimeUtils.wait_time(5)
             if auto.click_element("./res/phone/zfb/bbnc_back.png", is_global=True):
