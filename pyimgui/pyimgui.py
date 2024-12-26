@@ -3,6 +3,8 @@ import glfw
 import imgui
 import threading
 from OpenGL.GL import *
+
+from automation import Automation
 from log import Log
 from log import log
 from config import cfg
@@ -187,9 +189,12 @@ class PyImgui:
                             imgui.set_scroll_here_y(1.0)
                         imgui.end_tab_item()
                     if imgui.begin_tab_item("设置").selected:
-                        expanded, visible = imgui.collapsing_header("当前签到", None)
+                        expanded, visible = imgui.collapsing_header("当前运行签到", None)
                         if expanded:
-                            imgui.text("任务队列")
+                            if imgui.button("模拟器"):
+                                cfg.set_value("window_title","MuMu模拟器12")
+                            if imgui.button("手机"):
+                                cfg.set_value("window_title", "2211133C")
                         imgui.end_tab_item()
 
         # 检查鼠标是否在 ImGui 窗口内

@@ -3,6 +3,7 @@ import ctypes
 import win32gui
 import pyperclip
 from log import Log
+from config import cfg
 import pygetwindow as gw
 from automation import auto
 from utils.time_utils import TimeUtils
@@ -57,7 +58,7 @@ class BaseUtils:
 
     @staticmethod
     def get_window_borders():
-        window_title = auto.window_title
+        window_title = cfg.get_value("window_title")
         window = gw.getWindowsWithTitle(window_title)
         if window:
             win = window[0]

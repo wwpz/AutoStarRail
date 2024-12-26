@@ -20,12 +20,10 @@ class Automation(metaclass=SingletonMeta):
     自动化管理类，用于管理与游戏窗口相关的自动化操作。
     """
 
-    def __init__(self, window_title, log: Optional[Log] = None):
+    def __init__(self, log: Optional[Log] = None):
         """
-        :param window_title: 游戏窗口的标题。
         :param log: 用于记录日志的Logger对象，可选参数。
         """
-        self.window_title = window_title
         self.log = log
         self.screenshot = None
         self._init_input()
@@ -58,8 +56,8 @@ class Automation(metaclass=SingletonMeta):
         while True:
             try:
                 self.log.debug("正在捕获游戏窗口截图")
-                result = Screenshot.take_screenshot(self.window_title)
-                # result = Screenshot.take_back_screenshot(self.window_title)
+                result = Screenshot.take_screenshot(cfg.get_value("window_title"))
+                # result = Screenshot.take_back_screenshot(cfg.get_value("window_title"))
                 if result:
                     self.screenshot, self.screenshot_pos = result
                     return result
@@ -93,11 +91,11 @@ class Automation(metaclass=SingletonMeta):
         :param y: 最佳匹配位置。
         :return: 匹配位置的中心坐标。
         """
-        window = gw.getWindowsWithTitle(self.window_title)
+        window = gw.getWindowsWithTitle(cfg.get_value("window_title"))
         if window:
             win = window[0]
         else:
-            raise Exception(f"Window with title '{self.window_title}' not found.")
+            raise Exception(f"Window with title '{cfg.get_value("window_title")}' not found.")
         return win.left + x, win.top + y
 
     def find_element(self, target, threshold=0.9, max_retries=2, take_screenshot=True, is_save=False,
@@ -247,8 +245,10 @@ class Automation(metaclass=SingletonMeta):
                 image = cv2.cvtColor(np.array(self.screenshot), cv2.COLOR_RGB2BGR)
                 # 裁剪图像
                 cropped_image = image[startY:endY, startX:endX]
+                # 转换为灰度图像
+                gray_cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2GRAY)
                 # 使用Canny边缘检测
-                edges = cv2.Canny(cropped_image, 200, 1200)
+                edges = cv2.Canny(gray_cropped_image, 100, 200)
                 # 使用霍夫变换进行圆形检测
                 circles = cv2.HoughCircles(
                     edges,
@@ -256,7 +256,7 @@ class Automation(metaclass=SingletonMeta):
                     dp=1,
                     minDist=30,
                     param1=50,
-                    param2=20,
+                    param2=30,
                     minRadius=10,
                     maxRadius=100
                 )
@@ -274,7 +274,6 @@ class Automation(metaclass=SingletonMeta):
                             #     os.path.join(f'./res/reward_images/{cfg.game_type}/{cfg.user_account}/{today_date}',
                             #                  f'{screenshot_module}_{timestamp}.jpg'), screenshot)
                             time.sleep(3)
-                            return True
             except Exception as e:
                 self.log.debug(f"寻找图片出错：{e}")
             if i < max_retries - 1:

@@ -1,4 +1,6 @@
 import threading
+
+from log import log
 from queue import Queue, PriorityQueue
 from utils.singleton import SingletonMeta
 from collections import deque
@@ -42,7 +44,16 @@ class TasksQueue(metaclass=SingletonMeta):
         """处理队列中的任务"""
         while self.queue:
             task_id, task_func = self.queue.popleft()
+            log.debug(f"正在执行任务 ID: {task_id}")
+            print(self.queue_len())
             task_func()
+            self.after_task_execution(task_id)
+
+
+    def after_task_execution(self,task_id):
+        log.debug(f"任务 {task_id} 执行完毕，执行后续操作...")
+        # if task_id == "hzh_signin":
+        #     cfg.set_value("hzh_signin",False)
 
     def execute_tasks(self):
         """执行队列中的所有任务，包括优先级和FIFO任务."""

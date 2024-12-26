@@ -11,9 +11,10 @@ class Hzh(PhoneTemplate):
         BaseUtils.paste("华住会")
         if auto.click_element("./res/phone/hzh/icon.png", is_global=True):
             TimeUtils.wait_time(10)
-            if auto.click_element("./res/phone/hzh/close.png", is_global=True):
-                self.log.info("关闭了广告")
-                TimeUtils.wait_(1)
+        auto.mysl_click_element(startX=0, startY=730, endX=2000, endY=780)
+        if auto.click_element("./res/phone/hzh/close.png", is_global=True):
+            self.log.info("关闭了广告")
+            TimeUtils.wait_(1)
             if auto.click_element("./res/phone/hzh/signin_icon.png", is_global=True) or auto.click_element(
                     "./res/phone/hzh/signin_icon2.png", is_global=True):
                 TimeUtils.wait_time(5)

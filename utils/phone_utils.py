@@ -26,7 +26,7 @@ class PhoneUtils:
         params["left"], params["top"], params["right"], params["bottom"] = BaseUtils.get_window_borders()
         params["center_x"] = params["left"] + (params["right"] - params["left"]) // 2
         params["center_y"] = params["top"] + (params["bottom"] - params["top"]) // 2
-        title = auto.window_title
+        title = cfg.get_value("window_title")
         window_class = BaseUtils.get_window_class_from_title(title)
 
         for i in range(3):

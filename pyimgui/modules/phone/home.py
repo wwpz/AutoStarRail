@@ -82,7 +82,7 @@ def update_signin(key):
         elif instance.__class__.__name__ == "Mys":
             PhoneUtils.update_or_del_node("米游社", delete_key=display_name)
             # 根据任务映射添加相应的任务
-            if key == "zfb_signin":
+            if key == "mys_starRail_signin":
                 tasks_queue.remove_task_fifo("mys_starRail_signin")
         else:
             PhoneUtils.update_or_del_node(display_name, delete_key=display_name)
@@ -109,9 +109,9 @@ def initialize_tasks():
 
 def execute_task(task_key):
     # 根据 task_key 执行不同的任务操作
-    if task_key == "华住会":
+    if task_key == "华住会签到":
         tasks_queue.add_task_fifo(lambda: hzh_instance.start(), "hzh_signin")
-    if task_key == "小米商城":
+    if task_key == "小米商城签到":
         tasks_queue.add_task_fifo(lambda: xmsc_instance.start(), "xmsc_signin")
     elif task_key == "星铁签到":
         tasks_queue.add_task_fifo(lambda: mys_instance.start("星铁签到"), "mys_starRail_signin")
