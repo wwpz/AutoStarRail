@@ -23,24 +23,26 @@ class Xmsc(PhoneTemplate):
                     TimeUtils.wait_time(5)
                 if auto.click_element("./res/phone/xmsc/gold.png", is_global=True):
                     TimeUtils.wait_time(5)
-                while True:
-                    i += 1
-                    if auto.click_element("./res/phone/xmsc/go_signin.png", is_global=True) or auto.click_element("./res/phone/xmsc/go_signin1.png", is_global=True):
+                    while auto.click_element("./res/phone/xmsc/go_signin.png", is_global=True) or auto.click_element(
+                            "./res/phone/xmsc/go_signin1.png", is_global=True):
                         TimeUtils.wait_time(5)
-                        if auto.click_element("./res/phone/xmsc/signin.png", is_global=True):
+                        if auto.click_element("./res/phone/xmsc/signin.png", is_global=True) or auto.click_element(
+                                "./res/phone/xmsc/signin2.png", is_global=True):
                             today_date = datetime.now().strftime('%Y_%m_%d')
                             self.log.info(f"{today_date}----小米商城签到成功")
                             TimeUtils.wait_time(5)
-                        if auto.click_element("./res/phone/xmsc/go_browse.png", is_global=True):
+                        auto.mouse_move(self.center_x, self.bottom - 30)
+                        TimeUtils.wait_(2)
+                        auto.mouse_dragRel(0, -280, 0.8)
+                        TimeUtils.wait_(2)
+                        if auto.click_element("./res/phone/xmsc/go_browse.png", is_global=True) or auto.click_element(
+                                "./res/phone/xmsc/go_browse2.png", is_global=True):
                             for i in range(3):
-                                TimeUtils.wait_time(5)
+                                TimeUtils.wait_time(2)
                                 auto.mouse_move(self.center_x, self.bottom - 200)
                                 random_float = random.uniform(250, 450)
                                 auto.mouse_dragRel(0, -random_float, 0.8)
-                                TimeUtils.wait_time(5)
+                                TimeUtils.wait_time(2)
                         if auto.click_element("./res/phone/xmsc/receive_award.png", is_global=True):
                             TimeUtils.wait_time(5)
-                        if i == 3:
-                            if auto.find_element("./res/phone/xmsc/done.png", is_global=True):
-                                break
         PhoneUtils.update_or_del_node("小米商城", delete_key="小米商城签到")

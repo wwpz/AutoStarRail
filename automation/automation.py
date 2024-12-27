@@ -258,7 +258,7 @@ class Automation(metaclass=SingletonMeta):
                     param1=50,
                     param2=30,
                     minRadius=10,
-                    maxRadius=100
+                    maxRadius=50
                 )
                 # 如果检测到圆形，则返回坐标
                 if circles is not None:

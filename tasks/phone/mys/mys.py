@@ -61,3 +61,4 @@ class Mys:
                     TimeUtils.wait_time(5)
                     if auto.click_element("./res/phone/mys/star_rail_signin.png", is_global=True):
                         TimeUtils.wait_time(5)
+        PhoneUtils.update_or_del_node("米游社", delete_key="星铁签到")

@@ -73,7 +73,7 @@ class Zfb:
             if auto.click_element("./res/phone/zfb/mysl_close2.png", is_global=True) or auto.click_element(
                     "./res/phone/zfb/mysl_close.png", is_global=True):
                 TimeUtils.wait_(3)
-            auto.mysl_click_element(startX=0, startY=230, endX=2000, endY=300)
+            auto.mysl_click_element(startX=0, startY=200, endX=2000, endY=320)
             TimeUtils.wait_(3)
             while auto.click_element("./res/phone/zfb/mysl_find_power.png", is_global=True):
                 TimeUtils.wait_(3)
