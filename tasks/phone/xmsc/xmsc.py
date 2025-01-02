@@ -9,7 +9,6 @@ from tasks.phone.phone_template import PhoneTemplate
 
 class Xmsc(PhoneTemplate):
     def run(self):
-        i = 0
         BaseUtils.paste("小米商城")
         if auto.click_element("./res/phone/xmsc/icon.png", is_global=True):
             TimeUtils.wait_time(15)
@@ -45,4 +44,4 @@ class Xmsc(PhoneTemplate):
                                 TimeUtils.wait_time(2)
                         if auto.click_element("./res/phone/xmsc/receive_award.png", is_global=True):
                             TimeUtils.wait_time(5)
-        PhoneUtils.update_or_del_node("小米商城", delete_key="小米商城签到")
+        PhoneUtils.update_or_del_node("小米商城签到", delete_key="小米商城签到")

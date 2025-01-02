@@ -32,4 +32,4 @@ class Hzh(PhoneTemplate):
                                                                           is_global=True, is_save=True):
                     today_date = datetime.now().strftime('%Y_%m_%d')
                     self.log.info(f"{today_date}----华住会签到成功")
-        PhoneUtils.update_or_del_node("华住会", delete_key="华住会签到")
+        PhoneUtils.update_or_del_node("华住会签到", delete_key="华住会签到")
