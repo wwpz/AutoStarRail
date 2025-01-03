@@ -30,6 +30,8 @@ class Xmsc(PhoneTemplate):
                             today_date = datetime.now().strftime('%Y_%m_%d')
                             self.log.info(f"{today_date}----小米商城签到成功")
                             TimeUtils.wait_time(5)
+                            if auto.click_element("./res/phone/xmsc/i_see.png", is_global=True):
+                                TimeUtils.wait_time(2)
                         auto.mouse_move(self.center_x, self.bottom - 30)
                         TimeUtils.wait_(2)
                         auto.mouse_dragRel(0, -280, 0.8)
