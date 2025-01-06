@@ -16,6 +16,7 @@ class Template(ABC):
             return
 
         log.hr(f"检测到{self.name}奖励", 0)
+        cfg.set_value("now_run_type", self.game_type)
         self.run()
         log.hr(f"{self.name}奖励完成", 0)
 

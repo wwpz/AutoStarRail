@@ -129,8 +129,15 @@ class Automation(metaclass=SingletonMeta):
                     if is_save:
                         # 保存领取成功后的截图
                         self.log.debug(f"本次保存的奖励图片为------：" + screenshot_module)
-                        cv2.imwrite(os.path.join(f'./res/reward_images/{cfg.game_type}/{cfg.user_account}/{today_date}',
-                                                 f'{screenshot_module}_{timestamp}.jpg'), screenshot)
+                        if cfg.now_run_type in ["food_language","mys"]:
+                            os.makedirs(f'./reward_images/{cfg.now_run_type}/{cfg.user_account}/{today_date}',
+                                        exist_ok=True)
+                            cv2.imwrite(os.path.join(f'./reward_images/{cfg.now_run_type}/{cfg.user_account}/{today_date}',
+                                                     f'{screenshot_module}_{timestamp}.jpg'), screenshot)
+                        else:
+                            os.makedirs(f'./reward_images/{cfg.now_run_type}/{today_date}',exist_ok=True)
+                            cv2.imwrite(os.path.join(f'./reward_images/{cfg.now_run_type}/{today_date}',
+                                                     f'{screenshot_module}_{timestamp}.jpg'), screenshot)
                     # 使用 OpenCV 保存图像
                     cv2.imwrite(save_path, screenshot)
                     if mask is not None:

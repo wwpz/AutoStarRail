@@ -44,6 +44,7 @@ class Xmsc(PhoneTemplate):
                                 random_float = random.uniform(250, 450)
                                 auto.mouse_dragRel(0, -random_float, 0.8)
                                 TimeUtils.wait_time(2)
-                        if auto.click_element("./res/phone/xmsc/receive_award.png", is_global=True):
+                        if auto.click_element("./res/phone/xmsc/receive_award.png", is_global=True) or auto.click_element(
+                                "./res/phone/xmsc/receive_award2.png", is_global=True):
                             TimeUtils.wait_time(5)
         PhoneUtils.update_or_del_node("小米商城签到", delete_key="小米商城签到")

@@ -1,7 +1,5 @@
-import os
 from log import log
 from config import cfg
-from datetime import datetime
 from automation import auto
 from utils.time_utils import TimeUtils
 from launcher import GameLauncher
@@ -15,8 +13,6 @@ cipher = AESCipher(cfg.aes_password, cfg.aes_salt)
 def start():
     log.hr("开始运行启动游戏", 0)
     if launch.game_type in ["food_language", "1999"]:
-        today_date = datetime.now().strftime('%Y_%m_%d')
-        os.makedirs(f'./res/reward_images/{cfg.game_type}/{cfg.user_account}/{today_date}', exist_ok=True)
         return start_simulator_game()
     else:
         print("星铁")
